@@ -28,7 +28,7 @@ Django의 기본 개념을 익히고 웹 애플리케이션의 전체적인 흐�
 git clone <저장소_URL>
 
 # 2. 프로젝트 디렉터리로 이동합니다.
-cd mysite
+cd projects
 
 # 3. 가상환경을 생성합니다.
 python -m venv venv
