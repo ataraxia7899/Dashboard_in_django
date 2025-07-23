@@ -48,7 +48,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. 데이터베이스 설정
+### 4. 데이터베이스 설정 (선택사항)
 
 ```bash
 # 1. 데이터베이스 스키마를 생성(migrate)합니다.
