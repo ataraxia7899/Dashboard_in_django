@@ -72,6 +72,17 @@
 					</div>
 				</div>
 				<!-- Chart + Lists -->
+				<div class="dash-grid-secondary">
+					<div class="chart-card">
+						<div class="chart-title">콘텐츠 유형별 분포</div>
+						<div class="chart-desc">
+							전체 콘텐츠에서 각 유형이 차지하는 비율
+						</div>
+						<div class="chart-graph" style="height: 260px">
+							<canvas id="contentPieChart"></canvas>
+						</div>
+					</div>
+				</div>
 				<div class="dash-grid">
 					<div class="chart-card">
 						<div class="chart-title">일간 활성 사용자 수 (DAU)</div>
@@ -151,11 +162,11 @@
 						</div>
 					</a>
 				</div>
-				<br />
 			</main>
 		</div>
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
+				// DAU Chart
 				const ctx = document.getElementById('dauChart').getContext('2d');
 
 				const labels = Array.from({ length: 30 }, (_, i) => {
@@ -217,6 +228,44 @@
 									},
 								},
 							},
+						},
+					},
+				});
+
+				// Content Distribution Chart
+				const contentCtx = document
+					.getElementById('contentPieChart')
+					.getContext('2d');
+				const contentPieChart = new Chart(contentCtx, {
+					type: 'doughnut',
+					data: {
+						labels: ['게시글', '좋아요', '댓글', '북마크', '알림'],
+						datasets: [
+							{
+								label: '콘텐츠 수',
+								data: [22, 13, 0, 1, 32], // From status cards
+								backgroundColor: [
+									'rgba(55, 116, 231, 0.7)',
+									'rgba(239, 56, 101, 0.7)',
+									'rgba(155, 155, 183, 0.7)',
+									'rgba(233, 187, 65, 0.7)',
+									'rgba(255, 185, 56, 0.7)',
+								],
+								borderColor: '#fff',
+								borderWidth: 2,
+								hoverOffset: 4,
+							},
+						],
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: {
+							legend: {
+								position: 'right',
+								labels: { padding: 15, font: { size: 14 } },
+							},
+							title: { display: false },
 						},
 					},
 				});
