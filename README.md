@@ -105,6 +105,13 @@ python manage.py runserver
     └── post_list.html                           # 게시글 목록 페이지 템플릿
 ```
 
+## 실행 결과
+
+<img width="503" height="1495" alt="Image" src="https://github.com/user-attachments/assets/9b4df953-154f-454c-a572-35ccb28c79ed" />
+<img width="503" height="1495" alt="Image" src="https://github.com/user-attachments/assets/0b8d5e84-9299-476a-8694-7755cb483aa3" />
+<img width="503" height="1113" alt="Image" src="https://github.com/user-attachments/assets/59af02aa-24be-4e30-9634-fb74bbaafd12" />
+<img width="503" height="1113" alt="Image" src="https://github.com/user-attachments/assets/c7859727-e0b1-44f8-ae3c-bc6542b796b3" />
+
 ## 📜 라이선스 및 연락처
 
 - 본 프로젝트는 학습 및 포트폴리오 용도로 작성되었습니다.
