@@ -69,49 +69,49 @@ python manage.py runserver
 ## 📂 디렉토리 구조
 
 ```text
-📦 projects/                      # 프로젝트 루트
-├── .gitignore                     # Git 추적 제외 파일 목록
-├── db.sqlite3                     # SQLite 데이터베이스 파일
-├── manage.py                      # Django 프로젝트 관리 스크립트 (명령행 도구)
-├── README.md                      # 프로젝트 설명 및 가이드 문서
-├── config/                        # Django 프로젝트 설정 디렉토리
-│   ├── __init__.py                # Python 패키지 초기화 파일
-│   ├── asgi.py                    # ASGI 서버 진입점
-│   ├── settings.py                # Django 전체 설정 파일
-│   ├── urls.py                    # 프로젝트 전체 URL 라우팅
-│   ├── wsgi.py                    # WSGI 서버 진입점
-│   └── __pycache__/               # Python 바이트코드 캐시 폴더
+📦 projects/                                    # 프로젝트 루트
+├── .gitignore                                   # Git 추적 제외 파일 목록
+├── db.sqlite3                                   # SQLite 데이터베이스 파일
+├── manage.py                                    # Django 프로젝트 관리 스크립트 (명령행 도구)
+├── README.md                                    # 프로젝트 설명 및 가이드 문서
+├── config/                                      # Django 프로젝트 설정 디렉토리
+│   ├── __init__.py                              # Python 패키지 초기화 파일
+│   ├── asgi.py                                  # ASGI 서버 진입점
+│   ├── settings.py                              # Django 전체 설정 파일
+│   ├── urls.py                                  # 프로젝트 전체 URL 라우팅
+│   ├── wsgi.py                                  # WSGI 서버 진입점
+│   └── __pycache__/                             # Python 바이트코드 캐시 폴더
 │       ├── __init__.cpython-313.pyc
 │       ├── settings.cpython-313.pyc
 │       ├── urls.cpython-313.pyc
 │       └── wsgi.cpython-313.pyc
-├── mysite/                        # 실제 앱 소스 및 의존성 파일 위치
-│   ├── requirements.txt           # pip 패키지 의존성 목록
-│   └── pybo/                      # pybo Django 앱
-│       ├── __init__.py            # Python 패키지 초기화 파일
-│       ├── admin.py               # Django 관리자 페이지 설정
-│       ├── apps.py                # 앱 설정 클래스
-│       ├── models.py              # 데이터베이스 모델 정의
-│       ├── tests.py               # 단위 테스트 코드
-│       ├── urls.py                # 앱 내부 URL 라우팅
-│       ├── views.py               # 뷰(로직) 함수/클래스
-│       ├── __pycache__/           # Python 바이트코드 캐시 폴더
+├── mysite/                                      # 실제 앱 소스 및 의존성 파일 위치
+│   ├── requirements.txt                         # pip 패키지 의존성 목록
+│   └── pybo/                                    # pybo Django 앱
+│       ├── __init__.py                          # Python 패키지 초기화 파일
+│       ├── admin.py                             # Django 관리자 페이지 설정
+│       ├── apps.py                              # 앱 설정 클래스
+│       ├── models.py                            # 데이터베이스 모델 정의
+│       ├── tests.py                             # 단위 테스트 코드
+│       ├── urls.py                              # 앱 내부 URL 라우팅
+│       ├── views.py                             # 뷰(로직) 함수/클래스
+│       ├── __pycache__/                         # Python 바이트코드 캐시 폴더
 │       │   ├── __init__.cpython-313.pyc
 │       │   ├── admin.cpython-313.pyc
 │       │   ├── apps.cpython-313.pyc
 │       │   ├── models.cpython-313.pyc
 │       │   ├── urls.cpython-313.pyc
 │       │   └── views.cpython-313.pyc
-│       └── migrations/            # DB 마이그레이션 파일
-│           ├── __init__.py        # 마이그레이션 패키지 초기화
-│           └── __pycache__/       # 마이그레이션 바이트코드 캐시
+│       └── migrations/                          # DB 마이그레이션 파일
+│           ├── __init__.py                      # 마이그레이션 패키지 초기화
+│           └── __pycache__/                     # 마이그레이션 바이트코드 캐시
 │               └── __init__.cpython-313.pyc
-├── static/                        # 정적 파일(CSS 등)
-│   ├── dashboard.css              # 대시보드 스타일 CSS
-│   └── post_list.css              # 게시글 목록 스타일 CSS
-└── templates/                     # HTML 템플릿 폴더
-    ├── dashboard.html             # 대시보드 페이지 템플릿
-    └── post_list.html             # 게시글 목록 페이지 템플릿
+├── static/                                      # 정적 파일(CSS 등)
+│   ├── dashboard.css                            # 대시보드 스타일 CSS
+│   └── post_list.css                            # 게시글 목록 스타일 CSS
+└── templates/                                   # HTML 템플릿 폴더
+    ├── dashboard.html                           # 대시보드 페이지 템플릿
+    └── post_list.html                           # 게시글 목록 페이지 템플릿
 ```
 
 ## 📜 라이선스 및 연락처
