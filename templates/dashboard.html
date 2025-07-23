@@ -10,6 +10,7 @@
 			rel="stylesheet"
 		/>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="{% static 'js/theme.js' %}" defer></script>
 	</head>
 	<body>
 		<div class="dash-container">
@@ -22,6 +23,9 @@
 						<div class="desc">사용자 통계 및 활동 현황</div>
 					</div>
 					<div class="user-area">
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
 						<button class="btn-refresh" onclick="location.reload()">
 							<span class="material-icons">refresh</span>
 							새로고침
@@ -200,7 +204,12 @@
 				</div>
 			</main>
 		</div>
+
 		<script>
+			// 전역 차트 인스턴스
+			let dauChart;
+			let contentPieChart;
+
 			document.addEventListener('DOMContentLoaded', function () {
 				// DAU Chart
 				const ctx = document.getElementById('dauChart').getContext('2d');
@@ -218,8 +227,8 @@
 				const gradient = ctx.createLinearGradient(0, 0, 0, 220);
 				gradient.addColorStop(0, 'rgba(55, 116, 231, 0.4)');
 				gradient.addColorStop(1, 'rgba(55, 116, 231, 0)');
-
-				const dauChart = new Chart(ctx, {
+				
+				dauChart = new Chart(ctx, {
 					type: 'line',
 					data: {
 						labels: labels, // x축
@@ -249,6 +258,8 @@
 								mode: 'index', // 동일한 x축 인덱스의 모든 데이터 표시
 								intersect: false, // 마우스가 직접 닿지 않아도 툴팁 표시
 								backgroundColor: 'rgba(0, 0, 0, 0.7)',
+								titleColor: '#fff',
+								bodyColor: '#fff',
 								titleFont: { size: 14, weight: 'bold' },
 								bodyFont: { size: 13 },
 								padding: 10,
@@ -272,7 +283,7 @@
 				const contentCtx = document
 					.getElementById('contentPieChart')
 					.getContext('2d');
-				const contentPieChart = new Chart(contentCtx, {
+				contentPieChart = new Chart(contentCtx, {
 					type: 'doughnut',
 					data: {
 						labels: ['게시글', '좋아요', '댓글', '북마크', '알림'],
@@ -302,8 +313,74 @@
 								labels: { padding: 15, font: { size: 14 } },
 							},
 							title: { display: false },
+							tooltip: {
+								backgroundColor: 'rgba(0, 0, 0, 0.7)',
+								titleColor: '#fff',
+								bodyColor: '#fff',
+								titleFont: { size: 14, weight: 'bold' },
+								bodyFont: { size: 13 },
+								padding: 10,
+								cornerRadius: 4,
+								callbacks: {
+									label: function (context) {
+										let label = context.label || '';
+										if (label) {
+											label += ': ';
+										}
+										label += context.formattedValue;
+										return ` ${label}`;
+									},
+								},
+							},
 						},
 					},
+				});
+
+				// Function to update chart colors based on the current theme
+				const updateChartColors = () => {
+					const bodyStyles = getComputedStyle(document.body);
+					const gridColor = bodyStyles
+						.getPropertyValue('--card-border-color')
+						.trim();
+					const textColor = bodyStyles
+						.getPropertyValue('--text-color-secondary')
+						.trim();
+					const cardBgColor = bodyStyles
+						.getPropertyValue('--card-bg-color')
+						.trim();
+					const tooltipBg = bodyStyles.getPropertyValue('--tooltip-bg').trim();
+					const tooltipTextColor = bodyStyles
+						.getPropertyValue('--tooltip-text-color')
+						.trim();
+
+					if (dauChart) {
+						dauChart.options.scales.x.ticks.color = textColor;
+						dauChart.options.scales.y.ticks.color = textColor;
+						dauChart.options.scales.x.grid.color = gridColor;
+						dauChart.options.scales.y.grid.color = gridColor;
+						// Update tooltip
+						const dauTooltip = dauChart.options.plugins.tooltip;
+						dauTooltip.backgroundColor = tooltipBg;
+						dauTooltip.titleColor = tooltipTextColor;
+						dauTooltip.bodyColor = tooltipTextColor;
+						dauChart.update('none');
+					}
+					if (contentPieChart) {
+						contentPieChart.options.plugins.legend.labels.color = textColor;
+						contentPieChart.data.datasets[0].borderColor = cardBgColor;
+						// Update tooltip
+						const pieTooltip = contentPieChart.options.plugins.tooltip;
+						pieTooltip.backgroundColor = tooltipBg;
+						pieTooltip.titleColor = tooltipTextColor;
+						pieTooltip.bodyColor = tooltipTextColor;
+						contentPieChart.update('none');
+					}
+				};
+
+				// Listen for the custom themeChanged event from theme.js
+				// to update chart colors.
+				document.addEventListener('themeChanged', () => {
+					updateChartColors();
 				});
 			});
 		</script>

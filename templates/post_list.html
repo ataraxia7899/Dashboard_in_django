@@ -11,6 +11,7 @@
 			href="https://fonts.googleapis.com/icon?family=Material+Icons"
 			rel="stylesheet"
 		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
 	</head>
 	<body>
 		<div class="dash-container">
@@ -23,9 +24,12 @@
 						<div class="desc">전체 게시글을 확인하고 관리합니다.</div>
 					</div>
 					<div class="user-area">
-						<a href="{% url 'pybo:index' %}" class="btn-back"
-							>대시보드로 돌아가기</a
-						>
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
+						<a href="{% url 'pybo:index' %}" class="btn-back">
+							<span class="material-icons">arrow_back</span> 대시보드
+						</a>
 					</div>
 				</div>
 

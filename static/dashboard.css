@@ -1,8 +1,69 @@
+:root {
+	--bg-color: #f6f8fb;
+	--text-color-primary: #222;
+	--text-color-secondary: #707070;
+	--text-color-strong: #23233c;
+	--text-color-meta: #6b6b7d;
+	--text-color-meta-light: #c7c7d1;
+	--card-bg-color: #fff;
+	--card-border-color: #edeef6;
+	--card-shadow-color: rgba(18, 59, 97, 0.03);
+	--card-shadow-hover-color: rgba(18, 59, 97, 0.08);
+	--card-key-color: #7c7b92;
+	--card-val-color: #252948;
+	--card-desc-color: #b7b9c5;
+	--btn-primary-bg: #3774e7;
+	--btn-primary-text: white;
+	--btn-primary-hover-bg: #1851a3;
+	--chart-desc-color: #a0a3b3;
+	--activity-icon-color: #8a8a9e;
+	--activity-text-color: #353b56;
+	--list-title-border-color: #e0e4f0;
+	--table-header-bg: #f9fafc;
+	--btn-danger-bg: #fbebeb;
+	--btn-danger-border: #f7d0d0;
+	--btn-danger-text: #d9534f;
+	--btn-danger-bg-hover: #d9534f;
+	--btn-danger-text-hover: #fff;
+	--btn-danger-border-hover: #d43f3a;
+	--tooltip-bg: rgba(20, 20, 35, 0.9);
+	--tooltip-text-color: #fff;
+}
+
+[data-theme='dark'] {
+	--bg-color: #1a1c23;
+	--text-color-primary: #e1e3e9;
+	--text-color-secondary: #8a8a9e;
+	--text-color-strong: #f0f2f5;
+	--text-color-meta: #9b9bb7;
+	--text-color-meta-light: #5a5c6e;
+	--card-bg-color: #23262e;
+	--card-border-color: #353842;
+	--card-shadow-color: rgba(0, 0, 0, 0.1);
+	--card-shadow-hover-color: rgba(0, 0, 0, 0.2);
+	--card-key-color: #9b9bb7;
+	--card-val-color: #f0f2f5;
+	--card-desc-color: #707280;
+	--btn-primary-hover-bg: #4a85f1;
+	--chart-desc-color: #8a8a9e;
+	--activity-icon-color: #8a8a9e;
+	--activity-text-color: #c1c3ce;
+	--list-title-border-color: #353842;
+	--table-header-bg: #2a2d35;
+	--btn-danger-bg: #4d2a2a;
+	--btn-danger-border: #6b3e3e;
+	--btn-danger-text: #ff8a80;
+	--btn-danger-bg-hover: #d9534f;
+	--btn-danger-text-hover: #fff;
+	--btn-danger-border-hover: #d43f3a;
+	--tooltip-bg: rgba(50, 53, 68, 0.9);
+	--tooltip-text-color: #f0f2f5;
+}
 body {
 	margin: 0;
 	font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
-	background: #f6f8fb;
-	color: #222;
+	background: var(--bg-color);
+	color: var(--text-color-primary);
 	margin: 5rem;
 }
 .dash-container {
@@ -28,7 +89,7 @@ body {
 }
 .dash-header .desc {
 	font-size: 1em;
-	color: #707070;
+	color: var(--text-color-secondary);
 	font-weight: 400;
 }
 .dash-header .user-area {
@@ -36,15 +97,33 @@ body {
 	align-items: center;
 	gap: 18px;
 }
+.dash-header .theme-toggle {
+	background: none;
+	border: 1.5px solid var(--card-border-color);
+	border-radius: 8px;
+	width: 38px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: var(--text-color-secondary);
+	transition: all 0.2s ease-in-out;
+}
+.dash-header .theme-toggle:hover {
+	background: var(--bg-color);
+	border-color: var(--btn-primary-bg);
+	color: var(--btn-primary-bg);
+}
 .dash-header .user-id {
 	font-size: 15px;
 	color: #555;
 	margin-right: 8px;
 }
 .dash-header .btn-refresh {
-	background: #3774e7;
+	background: var(--btn-primary-bg);
 	border: none;
-	color: white;
+	color: var(--btn-primary-text);
 	font-weight: 600;
 	border-radius: 6px;
 	padding: 7px 15px;
@@ -56,7 +135,7 @@ body {
 	gap: 6px;
 }
 .dash-header .btn-refresh:hover {
-	background: #1851a3;
+	background: var(--btn-primary-hover-bg);
 }
 .dash-header .btn-refresh .material-icons {
 	font-size: 18px;
@@ -69,27 +148,27 @@ body {
 	margin-bottom: 30px;
 }
 .card {
-	background: #fff;
+	background: var(--card-bg-color);
 	border-radius: 14px;
 	flex: 1 1 160px;
 	min-width: 130px;
 	padding: 20px 18px 15px 20px;
-	box-shadow: 0 4px 10px rgba(18, 59, 97, 0.03);
+	box-shadow: 0 4px 10px var(--card-shadow-color);
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
-	border: 1.2px solid #edeef6;
+	border: 1.2px solid var(--card-border-color);
 	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 .card:hover,
 .mini-list-card:hover {
 	transform: translateY(-5px);
-	box-shadow: 0 8px 20px rgba(18, 59, 97, 0.08);
+	box-shadow: 0 8px 20px var(--card-shadow-hover-color);
 }
 .card .card-key {
 	font-size: 1.04em;
 	font-weight: 600;
-	color: #7c7b92;
+	color: var(--card-key-color);
 	margin-bottom: 7px;
 	display: flex;
 	align-items: center;
@@ -98,11 +177,11 @@ body {
 .card .card-val {
 	font-size: 1.6em;
 	font-weight: 800;
-	color: #252948;
+	color: var(--card-val-color);
 }
 .card .card-desc {
 	font-size: 13px;
-	color: #b7b9c5;
+	color: var(--card-desc-color);
 	font-weight: 400;
 	margin-top: 2px;
 }
@@ -135,21 +214,21 @@ body {
 	margin-top: 30px;
 }
 .chart-card {
-	background: #fff;
+	background: var(--card-bg-color);
 	border-radius: 14px;
 	padding: 18px 18px 8px 22px;
 	min-width: 0;
 	margin-bottom: 28px;
-	border: 1.2px solid #edeef6;
+	border: 1.2px solid var(--card-border-color);
 }
 .chart-title {
 	font-size: 1.08em;
 	margin-bottom: 6px;
 	font-weight: 700;
-	color: #23233c;
+	color: var(--text-color-strong);
 }
 .chart-desc {
-	color: #a0a3b3;
+	color: var(--chart-desc-color);
 	font-size: 13.5px;
 	margin-bottom: 13px;
 	font-weight: 400;
@@ -161,11 +240,11 @@ body {
 	align-items: flex-end;
 }
 .mini-list-card {
-	background: #fff;
+	background: var(--card-bg-color);
 	border-radius: 14px;
 	padding: 18px 19px 12px 17px;
 	min-width: 0;
-	border: 1.2px solid #edeef6;
+	border: 1.2px solid var(--card-border-color);
 	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 	height: 430px;
 }
@@ -173,8 +252,8 @@ body {
 	font-weight: 700;
 	font-size: 15px;
 	margin-bottom: 10px;
-	color: #23233c;
-	border-bottom: 1px solid gray;
+	color: var(--text-color-strong);
+	border-bottom: 1px solid var(--list-title-border-color);
 	padding: 15px 1px;
 }
 .user-list,
@@ -192,7 +271,7 @@ body {
 .user-list li,
 .post-list li {
 	margin-bottom: 5px;
-	color: #353b56;
+	color: var(--activity-text-color);
 }
 .activity-list {
 	display: flex;
@@ -206,25 +285,25 @@ body {
 	gap: 12px;
 	font-size: 15px;
 	line-height: 1.5;
-	color: #353b56;
+	color: var(--activity-text-color);
 }
 .activity-list .material-icons {
 	font-size: 22px;
-	color: #8a8a9e;
+	color: var(--activity-icon-color);
 	margin-top: 1px;
 }
 .activity-list strong {
 	font-weight: 600;
-	color: #23233c;
+	color: var(--text-color-strong);
 }
 .user-meta {
-	color: #6b6b7d;
+	color: var(--text-color-meta);
 	font-size: 13px;
 	display: block;
 	margin-bottom: 2.5px;
 }
 .meta-light {
-	color: #c7c7d1;
+	color: var(--text-color-meta-light);
 	font-size: 13px;
 }
 .card-link {
