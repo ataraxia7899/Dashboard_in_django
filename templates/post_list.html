@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>게시글 목록 - Bada 어드민</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_list.css' %}" />
+		<!-- 아이콘용 Google Fonts: Material Icons -->
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div class="dash-container">
+			<!-- Main -->
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">게시글 목록</div>
+						<div class="desc">전체 게시글을 확인하고 관리합니다.</div>
+					</div>
+					<div class="user-area">
+						<a href="{% url 'pybo:index' %}" class="btn-back"
+							>대시보드로 돌아가기</a
+						>
+					</div>
+				</div>
+
+				<!-- Post List Table -->
+				<div class="post-list-container">
+					<table class="post-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>내용</th>
+								<th>작성자</th>
+								<th>작성일</th>
+								<th>관리</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- Example Post Row 1 -->
+							<tr>
+								<td>22</td>
+								<td>pitch cam</td>
+								<td>존서</td>
+								<td>2024-07-08</td>
+								<td><button class="btn-delete">삭제</button></td>
+							</tr>
+							<!-- Example Post Row 2 -->
+							<tr>
+								<td>21</td>
+								<td>Plan for next step...</td>
+								<td>존서</td>
+								<td>2024-07-07</td>
+								<td><button class="btn-delete">삭제</button></td>
+							</tr>
+							<!-- Example Post Row 3 -->
+							<tr>
+								<td>20</td>
+								<td>O/P 계획 세부 사이트...</td>
+								<td>존서</td>
+								<td>2024-06-26</td>
+								<td><button class="btn-delete">삭제</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

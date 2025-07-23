@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Bada 어드민 대시보드 클론</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+	<body>
+		<div class="dash-container">
+			<!-- Main -->
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">Admin 대시보드</div>
+						<div class="desc">사용자 통계 및 활동 현황</div>
+					</div>
+					<div class="user-area">
+						<button class="btn-refresh" onclick="location.reload()">
+							<span class="material-icons">refresh</span>
+							새로고침
+						</button>
+					</div>
+				</div>
+				<!-- Status Cards -->
+				<div class="card-row">
+					<div class="card">
+						<span class="card-key">총 사용자</span>
+						<span class="card-val">7</span>
+						<span class="card-desc">어제 기준</span>
+					</div>
+					<div class="card">
+						<span class="card-key">월간 활성 사용자</span>
+						<span class="card-val">4</span>
+						<span class="card-desc">30일 이내 활동</span>
+					</div>
+					<div class="card">
+						<span class="card-key">총 게시글</span>
+						<span class="card-val">22</span>
+						<span class="material-icons card-ico love">&#xe87d;</span>
+						<span class="meta-light">전체 게시글 수</span>
+					</div>
+					<div class="card">
+						<span class="card-key">총 좋아요</span>
+						<span class="card-val">13</span>
+						<span class="material-icons card-ico love">&#xe87e;</span>
+						<span class="meta-light">전체 좋아요 수</span>
+					</div>
+					<div class="card">
+						<span class="card-key">총 댓글</span>
+						<span class="card-val">0</span>
+						<span class="material-icons card-ico cmt">&#xe0b7;</span>
+						<span class="meta-light">전체 댓글 수</span>
+					</div>
+					<div class="card">
+						<span class="card-key">북마크</span>
+						<span class="card-val">1</span>
+						<span class="material-icons card-ico bmk">&#xe866;</span>
+						<span class="meta-light">전체 북마크 수</span>
+					</div>
+					<div class="card">
+						<span class="card-key">알림</span>
+						<span class="card-val">32</span>
+						<span class="material-icons card-ico alarm">&#xe7f4;</span>
+						<span class="meta-light">전체 알림 수</span>
+					</div>
+				</div>
+				<!-- Chart + Lists -->
+				<div class="dash-grid">
+					<div class="chart-card">
+						<div class="chart-title">일간 활성 사용자 수 (DAU)</div>
+						<div class="chart-desc">
+							지난 30일간 일별 활성 사용자 현황 (가입, 게시글, 댓글, 북마크 활동
+							기준)
+						</div>
+						<div class="chart-graph">
+							<canvas id="dauChart"></canvas>
+						</div>
+					</div>
+					<div class="mini-list-card">
+						<div class="mini-list-title">최근 가입자</div>
+						<ul class="user-list">
+							<li>
+								<span
+									>Studio_bada
+									<span class="user-meta"
+										>@divetobada_official · 4시간 전</span
+									></span
+								>
+							</li>
+							<li>
+								<span
+									>윤소영 <span class="user-meta">@-5wve · 7월 4일</span></span
+								>
+							</li>
+							<li>
+								<span
+									>ottosei_yokokawa<span class="user-meta"
+										>@ottosei_yokokawa · 6월 15일</span
+									></span
+								>
+							</li>
+							<li>
+								<span>moca <span class="user-meta">@moca · 6월 7일</span></span>
+							</li>
+							<li>
+								<span
+									>서현 <span class="user-meta">@-73rf · 6월 6일</span></span
+								>
+							</li>
+						</ul>
+					</div>
+					<a href="{% url 'pybo:post_list' %}" class="card-link">
+						<div class="mini-list-card">
+							<div class="mini-list-title">최근 게시글</div>
+							<ul class="post-list">
+								<li>
+									<b>존서</b>
+									<span class="user-meta">12시간 전</span>
+									<div class="meta-light">pitch cam</div>
+								</li>
+								<li>
+									<b>존서</b>
+									<span class="user-meta">7월 7일</span>
+									<div class="meta-light">Plan for next step...</div>
+								</li>
+								<li>
+									<b>존서</b>
+									<span class="user-meta">6월 26일</span>
+									<div class="meta-light">
+										<strong>O/P 계획 세부 사이트...</strong>
+									</div>
+								</li>
+								<li>
+									<b>Zirla</b>
+									<span class="user-meta">6월 18일</span>
+									<div class="meta-light">???가 걸렸다</div>
+								</li>
+								<li>
+									<b>존서</b>
+									<span class="user-meta">6월 16일</span>
+									<div class="meta-light">pcn...</div>
+								</li>
+							</ul>
+						</div>
+					</a>
+				</div>
+				<br />
+			</main>
+		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const ctx = document.getElementById('dauChart').getContext('2d');
+
+				const labels = Array.from({ length: 30 }, (_, i) => {
+					const d = new Date();
+					d.setDate(d.getDate() - (29 - i));
+					return `${d.getMonth() + 1}/${d.getDate()}`;
+				});
+				const data = [
+					12, 25, 18, 33, 45, 30, 22, 40, 35, 50, 42, 60, 55, 70, 65, 80, 75,
+					90, 85, 100, 95, 110, 105, 120, 115, 130, 125, 140, 135, 150,
+				];
+
+				const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+				gradient.addColorStop(0, 'rgba(55, 116, 231, 0.4)');
+				gradient.addColorStop(1, 'rgba(55, 116, 231, 0)');
+
+				const dauChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labels, // x축
+						datasets: [
+							{
+								label: 'DAU',
+								data: data, // y축
+								borderColor: '#3774e7',
+								borderWidth: 2.5,
+								pointBackgroundColor: '#3774e7',
+								pointRadius: 0, // 평소에는 점 숨기기
+								pointHoverRadius: 5, // 마우스 올리면 점 보이기
+								fill: true,
+								backgroundColor: gradient,
+								tension: 0.4, // 곡선 부드럽게
+							},
+						],
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: { y: { beginAtZero: true } },
+						plugins: {
+							legend: { display: false },
+							tooltip: {
+								enabled: true, // 툴팁 활성화 (기본값)
+								mode: 'index', // 동일한 x축 인덱스의 모든 데이터 표시
+								intersect: false, // 마우스가 직접 닿지 않아도 툴팁 표시
+								backgroundColor: 'rgba(0, 0, 0, 0.7)',
+								titleFont: { size: 14, weight: 'bold' },
+								bodyFont: { size: 13 },
+								padding: 10,
+								cornerRadius: 4,
+								// 툴팁 내용 커스터마이징
+								callbacks: {
+									// 툴팁 제목에서 날짜 뒤에 '요일'을 붙이지 않도록 수정
+									title: function (context) {
+										return context[0].label;
+									},
+									label: function (context) {
+										return `  활성 사용자: ${context.parsed.y}명`;
+									},
+								},
+							},
+						},
+					},
+				});
+			});
+		</script>
+	</body>
+</html>
