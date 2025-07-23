@@ -69,7 +69,7 @@ python manage.py runserver
 ## 📂 디렉토리 구조
 
 ```text
-📦 projects/                # 프로젝트 루트
+📦 projects/                      # 프로젝트 루트
 ├── .gitignore                     # Git 추적 제외 파일 목록
 ├── db.sqlite3                     # SQLite 데이터베이스 파일
 ├── manage.py                      # Django 프로젝트 관리 스크립트 (명령행 도구)
@@ -102,16 +102,16 @@ python manage.py runserver
 │       │   ├── models.cpython-313.pyc
 │       │   ├── urls.cpython-313.pyc
 │       │   └── views.cpython-313.pyc
-│       └── migrations/                # DB 마이그레이션 파일
-│           ├── __init__.py            # 마이그레이션 패키지 초기화
-│           └── __pycache__/           # 마이그레이션 바이트코드 캐시
+│       └── migrations/            # DB 마이그레이션 파일
+│           ├── __init__.py        # 마이그레이션 패키지 초기화
+│           └── __pycache__/       # 마이그레이션 바이트코드 캐시
 │               └── __init__.cpython-313.pyc
-├── static/                            # 정적 파일(CSS 등)
-│   ├── dashboard.css                  # 대시보드 스타일 CSS
-│   └── post_list.css                  # 게시글 목록 스타일 CSS
-└── templates/                         # HTML 템플릿 폴더
-    ├── dashboard.html                 # 대시보드 페이지 템플릿
-    └── post_list.html                 # 게시글 목록 페이지 템플릿
+├── static/                        # 정적 파일(CSS 등)
+│   ├── dashboard.css              # 대시보드 스타일 CSS
+│   └── post_list.css              # 게시글 목록 스타일 CSS
+└── templates/                     # HTML 템플릿 폴더
+    ├── dashboard.html             # 대시보드 페이지 템플릿
+    └── post_list.html             # 게시글 목록 페이지 템플릿
 ```
 
 ## 📜 라이선스 및 연락처
