@@ -3,9 +3,13 @@
 .post-list-container {
 	background: var(--card-bg-color);
 	border-radius: 14px;
-	padding: 20px;
+	padding: 25px 20px 10px;
 	border: 1.2px solid var(--card-border-color);
 	box-shadow: 0 4px 10px var(--card-shadow-color);
+	height: 80%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .post-table {
@@ -73,4 +77,51 @@
 .btn-back:hover {
 	border-color: var(--btn-primary-bg);
 	color: var(--btn-primary-bg);
+}
+
+/* Pagination Styles */
+.pagination-container {
+	display: flex;
+	justify-content: center;
+	padding: 25px 0 15px;
+}
+
+.pagination {
+	display: flex;
+	gap: 8px;
+}
+
+.pagination a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 38px;
+	height: 38px;
+	padding: 0 10px;
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 14px;
+	border-radius: 8px;
+	transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+	color: var(--text-color-secondary);
+	background-color: var(--card-bg-color);
+	border: 1.5px solid var(--card-border-color);
+}
+
+.pagination a:hover:not(.active) {
+	border-color: var(--btn-primary-bg);
+	color: var(--btn-primary-bg);
+	background-color: var(--bg-color);
+}
+
+.pagination a.active {
+	background-color: var(--btn-primary-bg);
+	color: var(--btn-primary-text);
+	border-color: var(--btn-primary-bg);
+	cursor: default;
+}
+
+.pagination a.disabled {
+	color: var(--text-color-meta-light);
+	pointer-events: none;
 }
