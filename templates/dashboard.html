@@ -210,6 +210,21 @@
 			let dauChart;
 			let contentPieChart;
 
+			/**
+			 * Blends the given RGBA color with white to make it lighter.
+			 * @param {string} rgba - The RGBA color string (e.g., 'rgba(r, g, b, a)').
+			 * @param {number} factor - The blend factor (0 to 1). 0 means no change, 1 means white.
+			 * @returns {string} The lightened, opaque RGB color string.
+			 */
+			function lightenRgba(rgba, factor = 0.4) {
+				const parts = rgba.match(/rgba?\((\d+), ?(\d+), ?(\d+)/);
+				if (!parts) return rgba;
+				let r = Math.min(255, Math.round(parseInt(parts[1]) + (255 - parseInt(parts[1])) * factor));
+				let g = Math.min(255, Math.round(parseInt(parts[2]) + (255 - parseInt(parts[2])) * factor));
+				let b = Math.min(255, Math.round(parseInt(parts[3]) + (255 - parseInt(parts[3])) * factor));
+				return `rgb(${r}, ${g}, ${b})`;
+			}
+
 			document.addEventListener('DOMContentLoaded', function () {
 				// DAU Chart
 				const ctx = document.getElementById('dauChart').getContext('2d');
@@ -352,6 +367,8 @@
 					const tooltipTextColor = bodyStyles
 						.getPropertyValue('--tooltip-text-color')
 						.trim();
+					
+					const isDarkMode = document.documentElement.dataset.theme === 'dark';
 
 					if (dauChart) {
 						dauChart.options.scales.x.ticks.color = textColor;
@@ -366,13 +383,24 @@
 						dauChart.update('none');
 					}
 					if (contentPieChart) {
-						contentPieChart.options.plugins.legend.labels.color = textColor;
-						contentPieChart.data.datasets[0].borderColor = cardBgColor;
 						// Update tooltip
 						const pieTooltip = contentPieChart.options.plugins.tooltip;
 						pieTooltip.backgroundColor = tooltipBg;
 						pieTooltip.titleColor = tooltipTextColor;
 						pieTooltip.bodyColor = tooltipTextColor;
+						contentPieChart.options.plugins.legend.labels.color = textColor;
+
+						if (isDarkMode) {
+							// In dark mode, use a brighter version of the slice color for the border.
+							const backgroundColors = contentPieChart.data.datasets[0].backgroundColor;
+							const borderColors = backgroundColors.map(color => lightenRgba(color, 0.4));
+							contentPieChart.data.datasets[0].borderColor = borderColors;
+							contentPieChart.data.datasets[0].borderWidth = 1.5;
+						} else {
+							// In light mode, use the card background color for a "gap" effect.
+							contentPieChart.data.datasets[0].borderColor = cardBgColor;
+							contentPieChart.data.datasets[0].borderWidth = 2;
+						}
 						contentPieChart.update('none');
 					}
 				};
