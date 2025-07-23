@@ -107,9 +107,16 @@ python manage.py runserver
 
 ## 실행 결과
 
+### 대시보드 페이지
 <img width="503" height="1495" alt="Image" src="https://github.com/user-attachments/assets/9b4df953-154f-454c-a572-35ccb28c79ed" />
+
+### 대시보드 페이지 (다크모드)
 <img width="503" height="1495" alt="Image" src="https://github.com/user-attachments/assets/0b8d5e84-9299-476a-8694-7755cb483aa3" />
+
+### 최근 게시글 페이지
 <img width="503" height="1113" alt="Image" src="https://github.com/user-attachments/assets/59af02aa-24be-4e30-9634-fb74bbaafd12" />
+
+### 최근 게시글 페이지 (다크모드)
 <img width="503" height="1113" alt="Image" src="https://github.com/user-attachments/assets/c7859727-e0b1-44f8-ae3c-bc6542b796b3" />
 
 ## 📜 라이선스 및 연락처
