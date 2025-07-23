@@ -200,10 +200,9 @@ body {
 .card-ico.alarm {
 	color: #ffb938;
 }
-/* Chart & Widgets */
 .dash-grid {
 	display: grid;
-	grid-template-columns: 1.6fr 1fr 1fr;
+	grid-template-columns: 1.4fr 1fr 1fr;
 	gap: 17px;
 	align-items: start;
 }
@@ -255,6 +254,7 @@ body {
 	color: var(--text-color-strong);
 	border-bottom: 1px solid var(--list-title-border-color);
 	padding: 15px 1px;
+	margin-top: -12px;
 }
 .user-list,
 .post-list,
