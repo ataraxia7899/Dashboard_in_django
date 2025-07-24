@@ -36,41 +36,42 @@
 				<div class="card-row">
 					<div class="card">
 						<span class="card-key">총 사용자</span>
-						<span class="card-val">7</span>
+						<span class="card-val">{{ total_users }}</span>
 						<span class="card-desc">어제 기준</span>
 					</div>
 					<div class="card">
 						<span class="card-key">월간 활성 사용자</span>
-						<span class="card-val">4</span>
+						<span class="card-val">{{ monthly_active_users }}</span>
 						<span class="card-desc">30일 이내 활동</span>
 					</div>
 					<div class="card">
 						<span class="card-key">총 게시글</span>
-						<span class="card-val">22</span>
+						<span class="card-val">{{ total_posts }}</span>
 						<span class="material-icons card-ico love">&#xe87d;</span>
 						<span class="meta-light">전체 게시글 수</span>
 					</div>
 					<div class="card">
 						<span class="card-key">총 좋아요</span>
-						<span class="card-val">13</span>
+						<span class="card-val">{{ total_likes }}</span>
 						<span class="material-icons card-ico love">&#xe87e;</span>
 						<span class="meta-light">전체 좋아요 수</span>
 					</div>
 					<div class="card">
 						<span class="card-key">총 댓글</span>
-						<span class="card-val">0</span>
+						<span class="card-val">{{ total_comments }}</span>
 						<span class="material-icons card-ico cmt">&#xe0b7;</span>
 						<span class="meta-light">전체 댓글 수</span>
 					</div>
 					<div class="card">
 						<span class="card-key">북마크</span>
-						<span class="card-val">1</span>
+						<span class="card-val">{{ total_bookmarks }}</span>
 						<span class="material-icons card-ico bmk">&#xe866;</span>
 						<span class="meta-light">전체 북마크 수</span>
 					</div>
 					<div class="card">
 						<span class="card-key">알림</span>
-						<span class="card-val">32</span>
+						<!-- 데이터베이스에 알람테이블이 없으므로 0으로 표시합니다. -->
+						<span class="card-val">0</span>
 						<span class="material-icons card-ico alarm">&#xe7f4;</span>
 						<span class="meta-light">전체 알림 수</span>
 					</div>
@@ -100,6 +101,7 @@
 				<div class="dash-grid">
 					<div class="mini-list-card">
 						<div class="mini-list-title">최근 활동 로그</div>
+						<!-- 이 부분은 아직 데이터베이스 테이블을 만들지 않아 더미 데이터로 표시됨 -->
 						<ul class="activity-list">
 							<li>
 								<span class="material-icons">person_add</span>
@@ -137,67 +139,39 @@
 					<div class="mini-list-card">
 						<div class="mini-list-title">최근 가입자</div>
 						<ul class="user-list">
+							{% for user in recent_users %}
 							<li>
 								<span
-									>Studio_bada
-									<span class="user-meta"
-										>@divetobada_official · 4시간 전</span
-									></span
-								>
+									>{{ user.username }}
+									<span class="user-meta">
+										가입: {{ user.join_date|date:"Y년 n월 j일" }}
+									</span>
+								</span>
 							</li>
-							<li>
-								<span
-									>윤소영 <span class="user-meta">@-5wve · 7월 4일</span></span
-								>
-							</li>
-							<li>
-								<span
-									>ottosei_yokokawa<span class="user-meta"
-										>@ottosei_yokokawa · 6월 15일</span
-									></span
-								>
-							</li>
-							<li>
-								<span>moca <span class="user-meta">@moca · 6월 7일</span></span>
-							</li>
-							<li>
-								<span
-									>서현 <span class="user-meta">@-73rf · 6월 6일</span></span
-								>
-							</li>
+							{% empty %}
+							<li>가입한 사용자가 없습니다.</li>
+							{% endfor %}
 						</ul>
 					</div>
 					<a href="{% url 'pybo:post_list' %}" class="card-link">
 						<div class="mini-list-card">
 							<div class="mini-list-title">최근 게시글</div>
 							<ul class="post-list">
+								{% for post in recent_posts %}
 								<li>
-									<b>존서</b>
-									<span class="user-meta">12시간 전</span>
-									<div class="meta-light">pitch cam</div>
-								</li>
-								<li>
-									<b>존서</b>
-									<span class="user-meta">7월 7일</span>
-									<div class="meta-light">Plan for next step...</div>
-								</li>
-								<li>
-									<b>존서</b>
-									<span class="user-meta">6월 26일</span>
+									<b>{{ post.user.username }}</b>
+									<!-- timesince 필터는 '5분 전', '2일 전'과 같이 표시해줍니다. -->
+									<span class="user-meta"
+										>{{ post.created_at|timesince }} 전</span
+									>
+									<!-- truncatechars 필터는 긴 내용을 자르고 ...을 붙여줍니다. -->
 									<div class="meta-light">
-										<strong>O/P 계획 세부 사이트...</strong>
+										{{ post.content|truncatechars:35 }}
 									</div>
 								</li>
-								<li>
-									<b>Zirla</b>
-									<span class="user-meta">6월 18일</span>
-									<div class="meta-light">???가 걸렸다</div>
-								</li>
-								<li>
-									<b>존서</b>
-									<span class="user-meta">6월 16일</span>
-									<div class="meta-light">pcn...</div>
-								</li>
+								{% empty %}
+								<li>작성된 게시글이 없습니다.</li>
+								{% endfor %}
 							</ul>
 						</div>
 					</a>
@@ -219,38 +193,39 @@
 			function lightenRgba(rgba, factor = 0.4) {
 				const parts = rgba.match(/rgba?\((\d+), ?(\d+), ?(\d+)/);
 				if (!parts) return rgba;
-				let r = Math.min(255, Math.round(parseInt(parts[1]) + (255 - parseInt(parts[1])) * factor));
-				let g = Math.min(255, Math.round(parseInt(parts[2]) + (255 - parseInt(parts[2])) * factor));
-				let b = Math.min(255, Math.round(parseInt(parts[3]) + (255 - parseInt(parts[3])) * factor));
+				let r = Math.min(
+					255,
+					Math.round(parseInt(parts[1]) + (255 - parseInt(parts[1])) * factor)
+				);
+				let g = Math.min(
+					255,
+					Math.round(parseInt(parts[2]) + (255 - parseInt(parts[2])) * factor)
+				);
+				let b = Math.min(
+					255,
+					Math.round(parseInt(parts[3]) + (255 - parseInt(parts[3])) * factor)
+				);
 				return `rgb(${r}, ${g}, ${b})`;
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
 				// DAU Chart
 				const ctx = document.getElementById('dauChart').getContext('2d');
-
-				const labels = Array.from({ length: 30 }, (_, i) => {
-					const d = new Date();
-					d.setDate(d.getDate() - (29 - i));
-					return `${d.getMonth() + 1}/${d.getDate()}`;
-				});
-				const data = [
-					12, 25, 18, 33, 45, 30, 22, 40, 35, 50, 42, 60, 55, 70, 65, 80, 75,
-					90, 85, 100, 95, 110, 105, 120, 115, 130, 125, 140, 135, 150,
-				];
+				const dauLabels = JSON.parse('{{ dau_labels_json|safe }}');
+				const dauValues = JSON.parse('{{ dau_values_json|safe }}');
 
 				const gradient = ctx.createLinearGradient(0, 0, 0, 220);
 				gradient.addColorStop(0, 'rgba(55, 116, 231, 0.4)');
 				gradient.addColorStop(1, 'rgba(55, 116, 231, 0)');
-				
+
 				dauChart = new Chart(ctx, {
 					type: 'line',
 					data: {
-						labels: labels, // x축
+						labels: dauLabels, // x축
 						datasets: [
 							{
 								label: 'DAU',
-								data: data, // y축
+								data: dauValues, // y축
 								borderColor: '#3774e7',
 								borderWidth: 2.5,
 								pointBackgroundColor: '#3774e7',
@@ -298,20 +273,21 @@
 				const contentCtx = document
 					.getElementById('contentPieChart')
 					.getContext('2d');
+				const pieChartData = JSON.parse('{{ pie_chart_data_json|safe }}');
+
 				contentPieChart = new Chart(contentCtx, {
 					type: 'doughnut',
 					data: {
-						labels: ['게시글', '좋아요', '댓글', '북마크', '알림'],
+						labels: pieChartData.labels,
 						datasets: [
 							{
 								label: '콘텐츠 수',
-								data: [22, 13, 0, 1, 32], // From status cards
+								data: pieChartData.data,
 								backgroundColor: [
 									'rgba(55, 116, 231, 0.7)',
 									'rgba(239, 56, 101, 0.7)',
 									'rgba(155, 155, 183, 0.7)',
 									'rgba(233, 187, 65, 0.7)',
-									'rgba(255, 185, 56, 0.7)',
 								],
 								borderColor: '#fff',
 								borderWidth: 2,
@@ -367,7 +343,7 @@
 					const tooltipTextColor = bodyStyles
 						.getPropertyValue('--tooltip-text-color')
 						.trim();
-					
+
 					const isDarkMode = document.documentElement.dataset.theme === 'dark';
 
 					if (dauChart) {
@@ -392,8 +368,11 @@
 
 						if (isDarkMode) {
 							// In dark mode, use a brighter version of the slice color for the border.
-							const backgroundColors = contentPieChart.data.datasets[0].backgroundColor;
-							const borderColors = backgroundColors.map(color => lightenRgba(color, 0.4));
+							const backgroundColors =
+								contentPieChart.data.datasets[0].backgroundColor;
+							const borderColors = backgroundColors.map((color) =>
+								lightenRgba(color, 0.4)
+							);
 							contentPieChart.data.datasets[0].borderColor = borderColors;
 							contentPieChart.data.datasets[0].borderWidth = 1.5;
 						} else {
