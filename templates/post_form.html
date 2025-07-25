@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>
+			{% if form.instance.pk %}게시글 수정{% else %}게시글 작성{% endif %} - Bada
+			어드민
+		</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_form.css' %}" />
+		<!-- 새로운 CSS 파일 -->
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+	</head>
+	<body>
+		<div class="dash-container">
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">
+							{% if form.instance.pk %}게시글 수정{% else %}게시글 작성{% endif %}
+						</div>
+						<div class="desc">게시글의 내용을 작성하거나 수정합니다.</div>
+					</div>
+					<div class="user-area">
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
+						<a href="{% url 'pybo:post_list' %}" class="btn-back">
+							<span class="material-icons">arrow_back</span> 목록으로
+						</a>
+					</div>
+				</div>
+
+				<!-- Post Form -->
+				<div class="form-container">
+					<form method="post">
+						{% csrf_token %}
+						<!-- 오류 표시 -->
+						{% if form.errors %}
+						<div class="form-errors">
+							{% for field in form %} {% for error in field.errors %}
+							<p>{{ field.label }}: {{ error }}</p>
+							{% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+							<p>{{ error }}</p>
+							{% endfor %}
+						</div>
+						{% endif %}
+
+						<div class="form-field">
+							<label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+							{{ form.title }}
+						</div>
+
+						<div class="form-field">
+							<label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
+							{{ form.content }}
+						</div>
+						<button type="submit" class="btn-submit">저장하기</button>
+					</form>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

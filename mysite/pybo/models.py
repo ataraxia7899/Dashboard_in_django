@@ -1,51 +1,58 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-class Bookmark(models.Model):
-    post = models.ForeignKey('Post', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField()
+class User(models.Model):
+    username = models.CharField(unique=True, max_length=50)
+    join_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.username
 
     class Meta:
-        managed = False
-        db_table = 'bookmark'
-
-
-class Comment(models.Model):
-    post = models.ForeignKey('Post', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    content = models.TextField()
-    created_at = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'comment'
+        db_table = 'user'
 
 
 class Post(models.Model):
+    user = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True, related_name='posts')
+    title = models.CharField(max_length=200)
     content = models.TextField()
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
-        managed = False
         db_table = 'post'
 
 
+class Bookmark(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='bookmarks')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='bookmarked_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'bookmark'
+        unique_together = ('user', 'post')
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Comment by {self.user} on {self.post}'
+
+    class Meta:
+        db_table = 'comment'
+
+
 class PostLike(models.Model):
-    post = models.ForeignKey(Post, models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField()
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='liked_posts')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False
         db_table = 'post_like'
-
-
-class User(models.Model):
-    username = models.CharField(unique=True, max_length=50)
-    join_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'user'
+        unique_together = ('user', 'post')

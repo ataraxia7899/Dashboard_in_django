@@ -159,14 +159,12 @@
 							<ul class="post-list">
 								{% for post in recent_posts %}
 								<li>
-									<b>{{ post.user.username }}</b>
+									<b>{{ post.title|truncatechars:35 }}</b>
 									<!-- timesince 필터는 '5분 전', '2일 전'과 같이 표시해줍니다. -->
-									<span class="user-meta"
-										>{{ post.created_at|timesince }} 전</span
-									>
+									<span class="user-meta">{{ post.user.username }} 님</span>
 									<!-- truncatechars 필터는 긴 내용을 자르고 ...을 붙여줍니다. -->
 									<div class="meta-light">
-										{{ post.content|truncatechars:35 }}
+										{{ post.created_at|timesince }} 전
 									</div>
 								</li>
 								{% empty %}

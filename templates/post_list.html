@@ -24,6 +24,10 @@
 						<div class="desc">전체 게시글을 확인하고 관리합니다.</div>
 					</div>
 					<div class="user-area">
+						<a href="{% url 'pybo:post_create' %}" class="btn-create">
+							<span class="material-icons">add</span>
+							글쓰기
+						</a>
 						<button class="theme-toggle" id="theme-toggle-btn">
 							<span class="material-icons">dark_mode</span>
 						</button>
@@ -39,64 +43,97 @@
 						<thead>
 							<tr>
 								<th>ID</th>
-								<th>내용</th>
+								<th>제목</th>
+								<th>내용 미리보기</th>
 								<th>작성자</th>
 								<th>작성일</th>
 								<th>관리</th>
 							</tr>
 						</thead>
 						<tbody>
-							<!-- Example Post Row 1 -->
+							{# `for` 루프는 리스트가 비어있을 때를 처리하는 `empty` 태그를 제공합니다. #}
+							{% for post in posts %}
 							<tr>
-								<td>22</td>
-								<td>pitch cam</td>
-								<td>존서</td>
-								<td>2024-07-08</td>
-								<td><button class="btn-delete">삭제</button></td>
+								<td>{{ post.id }}</td>
+								<td class="post-title">{{ post.title|truncatechars:50 }}</td>
+								<td class="post-content-preview">
+									{{ post.content|truncatechars:10 }}
+								</td>
+								<td>{{ post.user.username|default:"(알 수 없음)" }}</td>
+								<td>{{ post.created_at|date:"Y-m-d H:i" }}</td>
+								<td class="manage-buttons">
+									<a
+										href="{% url 'pybo:post_update' post.id %}"
+										class="btn-update"
+										>수정</a
+									>
+									<form
+										action="{% url 'pybo:post_delete' post.id %}"
+										method="post"
+										onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
+									>
+										{% csrf_token %}
+										<button type="submit" class="btn-delete">삭제</button>
+									</form>
+								</td>
 							</tr>
-							<!-- Example Post Row 2 -->
+							{% empty %}
 							<tr>
-								<td>21</td>
-								<td>Plan for next step...</td>
-								<td>존서</td>
-								<td>2024-07-07</td>
-								<td><button class="btn-delete">삭제</button></td>
+								<td colspan="6" style="text-align: center; padding: 20px">
+									게시글이 없습니다.
+								</td>
 							</tr>
-							<!-- Example Post Row 3 -->
-							<tr>
-								<td>20</td>
-								<td>O/P 계획 세부 사이트...</td>
-								<td>존서</td>
-								<td>2024-06-26</td>
-								<td><button class="btn-delete">삭제</button></td>
-							</tr>
-							<!-- 실제로는 백엔드에서 페이지에 맞는 데이터만 전달합니다. -->
-							<tr>
-								<td>19</td>
-								<td>???가 걸렸다</td>
-								<td>Zirla</td>
-								<td>2024-06-18</td>
-								<td><button class="btn-delete">삭제</button></td>
-							</tr>
-							<tr>
-								<td>18</td>
-								<td>pcn...</td>
-								<td>존서</td>
-								<td>2024-06-16</td>
-								<td><button class="btn-delete">삭제</button></td>
-							</tr>
+							{% endfor %}
 						</tbody>
 					</table>
 					<!-- Pagination -->
 					<div class="pagination-container">
 						<div class="pagination">
+							<!-- 이전 페이지 -->
+							{% if posts.has_previous %}
+							<a
+								href="?page={{ posts.previous_page_number }}"
+								class="page-arrow"
+								>&laquo;</a
+							>
+							{% else %}
 							<a href="#" class="page-arrow disabled">&laquo;</a>
-							<a href="#" class="page-link active">1</a>
-							<a href="#" class="page-link">2</a>
-							<a href="#" class="page-link">3</a>
-							<a href="#" class="page-link">4</a>
-							<a href="#" class="page-link">5</a>
-							<a href="#" class="page-arrow">&raquo;</a>
+							{% endif %}
+							<!-- 페이지 번호 -->
+							{% for page_number in posts.paginator.page_range %}
+								{# 첫 페이지 링크 #}
+								{% if page_number == 1 %}
+									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
+								{% endif %}
+
+								{# 첫 페이지 뒤의 생략 부호 #}
+								{% if page_number == posts.number|add:"-3" and page_number > 2 %}
+									<a href="#" class="page-link disabled">...</a>
+								{% endif %}
+
+								{# 현재 페이지 주변의 페이지들 #}
+								{% if page_number > 1 and page_number < posts.paginator.num_pages and page_number >= posts.number|add:"-2" and page_number <= posts.number|add:"2" %}
+									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
+								{% endif %}
+
+								{# 마지막 페이지 앞의 생략 부호 #}
+								{% if page_number == posts.number|add:"3" and page_number < posts.paginator.num_pages|add:"-1" %}
+									<a href="#" class="page-link disabled">...</a>
+								{% endif %}
+
+								{# 마지막 페이지 링크 (페이지가 1개 이상일 때) #}
+								{% if page_number == posts.paginator.num_pages and posts.paginator.num_pages > 1 %}
+									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
+								{% endif %}
+							{% endfor %}
+							<!-- 다음 페이지 -->
+							{% if posts.has_next %}
+							<a href="?page={{ posts.next_page_number }}" class="page-arrow"
+								>&raquo;</a
+							>
+							{% else %}
+							<a href="#" class="page-arrow disabled">&raquo;</a>
+							{% endif %}
 						</div>
 					</div>
 				</div>

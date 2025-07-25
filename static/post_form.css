@@ -1,0 +1,84 @@
+/* post_form.css */
+
+.form-container {
+	background: var(--card-bg-color);
+	border-radius: 14px;
+	padding: 30px 35px;
+	border: 1.2px solid var(--card-border-color);
+	box-shadow: 0 4px 10px var(--card-shadow-color);
+}
+
+.form-field {
+	margin-bottom: 25px;
+}
+
+.form-field label {
+	display: block;
+	font-weight: 600;
+	color: var(--card-key-color);
+	margin-bottom: 10px;
+	font-size: 15px;
+}
+
+.form-field input[type='text'],
+.form-field textarea {
+	width: 100%;
+	padding: 14px;
+	border: 1.5px solid var(--card-border-color);
+	border-radius: 8px;
+	background-color: var(--bg-color);
+	color: var(--text-color-primary);
+	font-size: 15px;
+	box-sizing: border-box;
+	transition: border-color 0.2s;
+	font-family: inherit;
+}
+
+.form-field input[type='text']:focus,
+.form-field textarea:focus {
+	outline: none;
+	border-color: var(--btn-primary-bg);
+}
+
+.form-field textarea {
+	min-height: 300px;
+	resize: vertical;
+}
+
+.btn-submit {
+	background: var(--btn-primary-bg);
+	border: none;
+	color: var(--btn-primary-text);
+	font-weight: 600;
+	border-radius: 8px;
+	padding: 12px 25px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background 0.18s;
+	float: right; /* 버튼을 오른쪽으로 정렬 */
+}
+
+.btn-submit:hover {
+	background: var(--btn-primary-hover-bg);
+}
+
+.btn-back {
+	background: none;
+	border: 1.5px solid var(--card-border-color);
+	color: var(--text-color-secondary);
+	font-weight: 600;
+	border-radius: 6px;
+	padding: 7px 15px;
+	cursor: pointer;
+	font-size: 15px;
+	transition: all 0.2s ease-in-out;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.btn-back:hover {
+	border-color: var(--btn-primary-bg);
+	color: var(--btn-primary-bg);
+}

@@ -28,6 +28,17 @@
 	vertical-align: middle;
 	white-space: nowrap;
 }
+.post-table td.post-title {
+	white-space: normal; /* 내용이 길 경우 줄바꿈 허용 */
+	max-width: 500px; /* 최대 너비 지정 */
+	word-break: break-word; /* 단어 단위로 줄바꿈하여 가독성 향상 */
+}
+
+.post-table td.post-content-preview {
+	color: var(--text-color-secondary);
+	font-size: 14px;
+	max-width: 150px;
+}
 
 .post-table thead th {
 	background-color: var(--table-header-bg);
@@ -40,6 +51,44 @@
 	background-color: var(--bg-color);
 }
 
+.manage-buttons {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.btn-create {
+	background: var(--btn-primary-bg);
+	border: none;
+	color: var(--btn-primary-text);
+	font-weight: 600;
+	border-radius: 6px;
+	padding: 7px 15px;
+	cursor: pointer;
+	font-size: 15px;
+	transition: background 0.18s;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.btn-create:hover {
+	background: var(--btn-primary-hover-bg);
+}
+
+.btn-update {
+	background: var(--card-bg-color);
+	border: 1px solid var(--card-border-color);
+	color: var(--text-color-secondary);
+	font-weight: 600;
+	border-radius: 6px;
+	padding: 5px 12px;
+	cursor: pointer;
+	font-size: 13px;
+	text-decoration: none;
+}
+
 .btn-delete {
 	background: var(--btn-danger-bg);
 	border: 1px solid var(--btn-danger-border);
@@ -50,6 +99,7 @@
 	cursor: pointer;
 	font-size: 13px;
 	transition: all 0.2s ease-in-out;
+	font-family: inherit; /* 폰트 상속 */
 }
 
 .btn-delete:hover {
