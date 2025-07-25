@@ -42,16 +42,15 @@
 					<table class="post-table">
 						<thead>
 							<tr>
-								<th>ID</th>
-								<th>제목</th>
-								<th>내용 미리보기</th>
-								<th>작성자</th>
-								<th>작성일</th>
-								<th>관리</th>
+								<th class="col-id">ID</th>
+								<th class="col-title">제목</th>
+								<th class="col-content">내용 미리보기</th>
+								<th class="col-author">작성자</th>
+								<th class="col-date">작성일</th>
+								<th class="col-manage">관리</th>
 							</tr>
 						</thead>
 						<tbody>
-							{# `for` 루프는 리스트가 비어있을 때를 처리하는 `empty` 태그를 제공합니다. #}
 							{% for post in posts %}
 							<tr>
 								<td>{{ post.id }}</td>
@@ -98,34 +97,34 @@
 							>
 							{% else %}
 							<a href="#" class="page-arrow disabled">&laquo;</a>
+							{% endif %} {% for page_number in posts.paginator.page_range %} 
+							{% if page_number == 1 %}
+							<a
+								href="?page={{ page_number }}"
+								class="page-link {% if page_number == posts.number %}active{% endif %}"
+								>{{ page_number }}</a
+							>
+							{% endif %} 
+							{% if page_number == posts.number|add:"-3" and page_number > 2 %}
+							<a href="#" class="page-link disabled">...</a>
+							{% endif %} 
+							{% if page_number > 1 and page_number < posts.paginator.num_pages and page_number >= posts.number|add:"-2" and page_number <= posts.number|add:"2" %}
+							<a
+								href="?page={{ page_number }}"
+								class="page-link {% if page_number == posts.number %}active{% endif %}"
+								>{{ page_number }}</a
+							>
 							{% endif %}
-							<!-- 페이지 번호 -->
-							{% for page_number in posts.paginator.page_range %}
-								{# 첫 페이지 링크 #}
-								{% if page_number == 1 %}
-									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
-								{% endif %}
-
-								{# 첫 페이지 뒤의 생략 부호 #}
-								{% if page_number == posts.number|add:"-3" and page_number > 2 %}
-									<a href="#" class="page-link disabled">...</a>
-								{% endif %}
-
-								{# 현재 페이지 주변의 페이지들 #}
-								{% if page_number > 1 and page_number < posts.paginator.num_pages and page_number >= posts.number|add:"-2" and page_number <= posts.number|add:"2" %}
-									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
-								{% endif %}
-
-								{# 마지막 페이지 앞의 생략 부호 #}
-								{% if page_number == posts.number|add:"3" and page_number < posts.paginator.num_pages|add:"-1" %}
-									<a href="#" class="page-link disabled">...</a>
-								{% endif %}
-
-								{# 마지막 페이지 링크 (페이지가 1개 이상일 때) #}
-								{% if page_number == posts.paginator.num_pages and posts.paginator.num_pages > 1 %}
-									<a href="?page={{ page_number }}" class="page-link {% if page_number == posts.number %}active{% endif %}">{{ page_number }}</a>
-								{% endif %}
-							{% endfor %}
+							{% if page_number == posts.number|add:"3" and page_number < posts.paginator.num_pages|add:"-1" %}
+							<a href="#" class="page-link disabled">...</a>
+							{% endif %} 
+							{% if page_number == posts.paginator.num_pages and posts.paginator.num_pages > 1 %}
+							<a
+								href="?page={{ page_number }}"
+								class="page-link {% if page_number == posts.number %}active{% endif %}"
+								>{{ page_number }}</a
+							>
+							{% endif %} {% endfor %}
 							<!-- 다음 페이지 -->
 							{% if posts.has_next %}
 							<a href="?page={{ posts.next_page_number }}" class="page-arrow"

@@ -6,6 +6,7 @@
 	padding: 30px 35px;
 	border: 1.2px solid var(--card-border-color);
 	box-shadow: 0 4px 10px var(--card-shadow-color);
+  height: 10%;
 }
 
 .form-field {

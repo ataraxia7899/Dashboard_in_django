@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>
-			{% if form.instance.pk %}게시글 수정{% else %}게시글 작성{% endif %} - Bada
+			{% if form.instance.pk %}게시글 수정{% else %}게시글 작성{% endif %}
 			어드민
 		</title>
 		{% load static %}
@@ -38,7 +38,7 @@
 				</div>
 
 				<!-- Post Form -->
-				<div class="form-container">
+				<div class="form-container" style="height: 55%;">
 					<form method="post">
 						{% csrf_token %}
 						<!-- 오류 표시 -->

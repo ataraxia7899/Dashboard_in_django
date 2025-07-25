@@ -16,28 +16,57 @@
 	width: 100%;
 	border-collapse: collapse;
 	font-size: 15px;
-	min-width: 600px; /* Ensure table is scrollable on small screens */
+	min-width: 600px; /* 작은 화면에서 테이블이 스크롤되도록 보장 */
+	table-layout: fixed; /* 컬럼 너비를 고정합니다. */
 }
 
 .post-table th,
 .post-table td {
 	padding: 12px 15px;
-	text-align: left;
+	text-align: center;
 	border-bottom: 1px solid var(--card-border-color);
 	color: var(--activity-text-color);
 	vertical-align: middle;
+	/* 기본적으로는 줄바꿈을 하지 않고, 내용이 길면 ...으로 표시합니다. */
 	white-space: nowrap;
-}
-.post-table td.post-title {
-	white-space: normal; /* 내용이 길 경우 줄바꿈 허용 */
-	max-width: 500px; /* 최대 너비 지정 */
-	word-break: break-word; /* 단어 단위로 줄바꿈하여 가독성 향상 */
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
+/* 각 컬럼의 너비를 지정합니다. */
+.post-table .col-id {
+	width: 5%;
+}
+.post-table .col-title {
+	width: 20%;
+}
+.post-table .col-content {
+	width: 20%;
+}
+.post-table .col-author {
+	width: 10%;
+}
+.post-table .col-date {
+	width: 15%;
+}
+.post-table .col-manage {
+	width: 15%;
+}
+
+/* 제목과 내용은 줄바꿈을 허용하고 가운데 정렬합니다. */
+.post-table th.col-title,
+.post-table td.post-title,
+.post-table th.col-content,
+.post-table td.post-content-preview {
+	white-space: normal;
+	word-break: break-word;
+	text-align: center;
+}
+
+/* 내용 미리보기 텍스트 스타일 */
 .post-table td.post-content-preview {
 	color: var(--text-color-secondary);
 	font-size: 14px;
-	max-width: 150px;
 }
 
 .post-table thead th {
@@ -55,6 +84,7 @@
 	display: flex;
 	gap: 8px;
 	align-items: center;
+	justify-content: center;
 }
 
 .btn-create {
