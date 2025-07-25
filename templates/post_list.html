@@ -54,7 +54,9 @@
 							{% for post in posts %}
 							<tr>
 								<td>{{ post.id }}</td>
-								<td class="post-title">{{ post.title|truncatechars:50 }}</td>
+								<td class="post-title">
+									<a href="{% url 'pybo:post_detail' post.id %}">{{ post.title|truncatechars:50 }}</a>
+								</td>
 								<td class="post-content-preview">
 									{{ post.content|truncatechars:10 }}
 								</td>

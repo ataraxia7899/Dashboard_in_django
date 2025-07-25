@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>{{ post.title }} - 게시글 상세 - Bada 어드민</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_detail.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+	</head>
+	<body>
+		<div class="dash-container">
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">게시글 상세 정보</div>
+						<div class="desc">게시글의 전체 내용을 확인합니다.</div>
+					</div>
+					<div class="user-area">
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
+						<a href="{% url 'pybo:post_list' %}" class="btn-back">
+							<span class="material-icons">list</span> 목록으로
+						</a>
+					</div>
+				</div>
+
+				<!-- Post Detail Content -->
+				<div class="post-detail-container">
+					<div class="post-header">
+						<h1 class="post-title">{{ post.title }}</h1>
+						<div class="post-meta">
+							<span class="author"
+								>작성자: {{ post.user.username|default:"(알 수 없음)" }}</span
+							>
+							<span class="separator">|</span>
+							<span class="date"
+								>작성일: {{ post.created_at|date:"Y년 m월 d일 H:i" }}</span
+							>
+						</div>
+					</div>
+					<div class="post-content">{{ post.content|linebreaksbr }}</div>
+					<div class="post-actions">
+						<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
+							>수정</a
+						>
+						<form
+							action="{% url 'pybo:post_delete' post.id %}"
+							method="post"
+							onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
+						>
+							{% csrf_token %}
+							<button type="submit" class="btn-delete">삭제</button>
+						</form>
+					</div>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

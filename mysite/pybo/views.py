@@ -94,6 +94,15 @@ def post_list(request):
   page_obj = paginator.get_page(page)
   return render(request, 'post_list.html', {'posts': page_obj})
 
+def post_detail(request, post_id):
+    """
+    post_id에 해당하는 게시글의 상세 정보를 보여주는 뷰
+    """
+    post = get_object_or_404(Post, pk=post_id)
+    context = {'post': post}
+    return render(request, 'post_detail.html', context)
+
+
 def post_create(request):
     # [개선] get_or_create를 사용하여 사용자가 없으면 생성하고, 있으면 가져옵니다.
     # 이렇게 하면 코드가 더 안정적이고 간결해집니다.
