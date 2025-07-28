@@ -6,7 +6,8 @@ from django.utils import timezone
 from datetime import timedelta
 import json, collections
 from django.db.models import Count
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import views as auth_views, login as auth_login
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator
@@ -164,7 +165,23 @@ def signup(request):
 
             # 3. 회원가입 후 자동 로그인
             auth_login(request, auth_user)
-            return redirect('pybo:index')
+            # 회원가입한 일반 사용자는 글 목록으로 이동시킵니다.
+            return redirect('pybo:post_list')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+class CustomLoginView(auth_views.LoginView):
+    """로그인 성공 후 사용자의 is_superuser 값에 따라 리디렉션 경로를 다르게 처리합니다."""
+    template_name = 'login.html'
+
+    def get_success_url(self):
+        user = self.request.user
+        if user.is_authenticated:
+            if user.is_superuser:
+                return reverse_lazy('pybo:index')  # 관리자는 대시보드로
+            else:
+                return reverse_lazy('pybo:post_list') # 일반 사용자는 글 목록으로
+        
+        # 인증되지 않은 경우 (이론적으로는 도달하지 않음)
+        return reverse_lazy('pybo:login')

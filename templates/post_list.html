@@ -31,14 +31,16 @@
 						<button class="theme-toggle" id="theme-toggle-btn">
 							<span class="material-icons">dark_mode</span>
 						</button>
+						{% if user.is_superuser %}
 						<a href="{% url 'pybo:index' %}" class="btn-back">
 							<span class="material-icons">arrow_back</span> 대시보드
 						</a>
+						{% endif %}
 					</div>
 				</div>
 
 				<!-- Post List Table -->
-				<div class="post-list-container">
+				<div class="post-list-container" style="height: 70%;">
 					<table class="post-table">
 						<thead>
 							<tr>
@@ -62,7 +64,8 @@
 								</td>
 								<td>{{ post.user.username|default:"(알 수 없음)" }}</td>
 								<td>{{ post.created_at|date:"Y-m-d H:i" }}</td>
-								<td class="manage-buttons">
+								<td class="manage-buttons" style="height: 30px;">
+									{% if user.username == post.user.username %}
 									<a
 										href="{% url 'pybo:post_update' post.id %}"
 										class="btn-update"
@@ -76,6 +79,7 @@
 										{% csrf_token %}
 										<button type="submit" class="btn-delete">삭제</button>
 									</form>
+									{% endif %}
 								</td>
 							</tr>
 							{% empty %}

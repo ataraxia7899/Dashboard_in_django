@@ -7,7 +7,7 @@ app_name = 'pybo'
 
 urlpatterns = [
     # 예: 대시보드 (http://.../pybo/) -> {% url 'pybo:index' %}
-    path('', views.index, name='index'),
+    path('dashboard/', views.index, name='index'),
     # 예: 게시글 목록 (http://.../pybo/post_list/) -> {% url 'pybo:post_list' %}
     path('post_list/', views.post_list, name='post_list'),
     
@@ -18,7 +18,7 @@ urlpatterns = [
     path('post/delete/<int:post_id>/', views.post_delete, name='post_delete'),
 
     # 로그인/로그아웃 URL 추가
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('', views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
 ]

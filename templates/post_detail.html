@@ -46,19 +46,21 @@
 						</div>
 					</div>
 					<div class="post-content">{{ post.content|linebreaksbr }}</div>
-					<div class="post-actions">
-						<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
-							>수정</a
-						>
-						<form
-							action="{% url 'pybo:post_delete' post.id %}"
-							method="post"
-							onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
-						>
-							{% csrf_token %}
-							<button type="submit" class="btn-delete">삭제</button>
-						</form>
-					</div>
+					{% if user.username == post.user.username %}
+						<div class="post-actions">
+							<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
+								>수정</a
+							>
+							<form
+								action="{% url 'pybo:post_delete' post.id %}"
+								method="post"
+								onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
+							>
+								{% csrf_token %}
+								<button type="submit" class="btn-delete">삭제</button>
+							</form>
+						</div>
+					{% endif %}
 				</div>
 			</main>
 		</div>
