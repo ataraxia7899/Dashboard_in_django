@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>회원가입</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_form.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			/* Material Icons 기본 스타일 (아이콘이 깨지지 않도록 보정) */
+			.material-icons {
+				font-family: 'Material Icons';
+				font-weight: normal;
+				font-style: normal;
+				font-size: 24px;
+				line-height: 1;
+				letter-spacing: normal;
+				text-transform: none;
+				display: inline-block;
+				white-space: nowrap;
+				word-wrap: normal;
+				direction: ltr;
+				-webkit-font-smoothing: antialiased;
+			}
+			/* 로그인/회원가입 페이지 공통 스타일 */
+			html,
+			body {
+				height: 100%;
+				background-color: var(--bg-color);
+			}
+			.auth-page-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100%;
+				padding: 20px;
+			}
+			.auth-box {
+				width: 100%;
+				max-width: 400px;
+				background-color: var(--card-bg-color);
+				padding: 2.5rem;
+				border-radius: 12px;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+				border: 1px solid var(--card-border-color);
+			}
+			.auth-header {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+			.auth-header .title {
+				font-size: 1.75rem;
+				font-weight: 700;
+				color: var(--text-color-primary);
+			}
+			.auth-header .desc {
+				font-size: 1rem;
+				color: var(--text-color-secondary);
+				margin-top: 0.5rem;
+			}
+			.form-errors {
+				background-color: rgba(239, 56, 101, 0.1);
+				color: #ef3865;
+				padding: 0.8rem 1rem;
+				border-radius: 6px;
+				margin-bottom: 1.5rem;
+				text-align: center;
+				font-size: 0.9rem;
+				font-weight: 500;
+			}
+			.form-errors p {
+				margin: 0;
+			}
+			.theme-toggle.auth-page-toggle {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+			}
+			.theme-toggle {
+				background-color: transparent;
+				border: 1px solid transparent;
+				width: 44px;
+				height: 44px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				transition: background-color 0.2s ease, border-color 0.2s ease;
+				color: var(--text-color-secondary);
+			}
+			.theme-toggle:hover {
+				background-color: var(--hover-bg-color);
+			}
+			.auth-box .btn-submit {
+				width: 100%;
+				padding: 12px 0;
+				font-size: 1rem;
+				font-weight: 600;
+				margin-top: 1rem;
+			}
+			.auth-footer {
+				text-align: center;
+				padding-top: 80px;
+				font-size: 0.9rem;
+				color: var(--text-color-secondary);
+			}
+			.auth-footer a {
+				color: var(--primary-color);
+				text-decoration: none;
+				font-weight: 500;
+			}
+			.auth-footer a:hover {
+				text-decoration: underline;
+			}
+      .form-field input[type='password'], .form-field textarea {
+        width: 100%;
+        padding: 14px;
+        border: 1.5px solid var(--card-border-color);
+        border-radius: 8px;
+        background-color: var(--bg-color);
+        color: var(--text-color-primary);
+        font-size: 15px;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        font-family: inherit;
+      }
+		</style>
+	</head>
+	<body>
+		<button class="theme-toggle auth-page-toggle" id="theme-toggle-btn">
+			<span class="material-icons">dark_mode</span>
+		</button>
+		<div class="auth-page-container">
+			<div class="auth-box">
+				<div class="auth-header">
+					<h2 class="title">회원가입</h2>
+					<p class="desc">새로운 계정을 생성합니다.</p>
+				</div>
+
+				<form method="post" action="{% url 'pybo:signup' %}">
+					{% csrf_token %} {% if form.errors %}
+					<div class="form-errors">
+						{% for field in form %} {% for error in field.errors %}
+						<p>{{ error }}</p>
+						{% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+						<p>{{ error }}</p>
+						{% endfor %}
+					</div>
+					{% endif %}
+
+					<div class="form-field" style="margin-bottom: 10px;">
+						<label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+						{{ form.username }}
+					</div>
+
+					<div class="form-field" style="margin-bottom: 10px;">
+						<label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+						{{ form.password }}
+					</div>
+
+					<div class="form-field" style="margin-bottom: 10px;">
+						<label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+						{{ form.password2 }}
+					</div>
+					<button type="submit" class="btn-submit">가입하기</button>
+				</form>
+				<div class="auth-footer">
+					이미 계정이 있으신가요? <a href="{% url 'pybo:login' %}">로그인</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

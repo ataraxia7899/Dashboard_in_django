@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>로그인</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_form.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			/* Material Icons 기본 스타일 (아이콘이 깨지지 않도록 보정) */
+			.material-icons {
+				font-family: 'Material Icons';
+				font-weight: normal;
+				font-style: normal;
+				font-size: 24px;
+				line-height: 1;
+				letter-spacing: normal;
+				text-transform: none;
+				display: inline-block;
+				white-space: nowrap;
+				word-wrap: normal;
+				direction: ltr;
+				-webkit-font-smoothing: antialiased;
+			}
+			/* 로그인/회원가입 페이지 공통 스타일 */
+			html,
+			body {
+				height: 100%;
+				background-color: var(--bg-color);
+			}
+			.auth-page-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100%;
+				padding: 20px;
+			}
+			.auth-box {
+				width: 100%;
+				max-width: 400px;
+				background-color: var(--card-bg-color);
+				padding: 2.5rem;
+				border-radius: 12px;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+				border: 1px solid var(--card-border-color);
+			}
+			.auth-header {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+			.auth-header .title {
+				font-size: 1.75rem;
+				font-weight: 700;
+				color: var(--text-color-primary);
+			}
+			.auth-header .desc {
+				font-size: 1rem;
+				color: var(--text-color-secondary);
+				margin-top: 0.5rem;
+			}
+			.form-errors {
+				background-color: rgba(239, 56, 101, 0.1);
+				color: #ef3865;
+				padding: 0.8rem 1rem;
+				border-radius: 6px;
+				margin-bottom: 1.5rem;
+				text-align: center;
+				font-size: 0.9rem;
+				font-weight: 500;
+			}
+			.form-errors p {
+				margin: 0;
+			}
+			.theme-toggle.auth-page-toggle {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+			}
+			/* 테마 버튼 자체의 스타일 (dashboard.css의 핵심 스타일을 가져옴) */
+			.theme-toggle {
+				background-color: transparent;
+				border: 1px solid transparent; /* 테두리 영역을 미리 확보 */
+				width: 44px;
+				height: 44px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				transition: background-color 0.2s ease, border-color 0.2s ease;
+				color: var(--text-color-secondary); /* 아이콘 색상 상속 */
+			}
+			.theme-toggle:hover {
+				background-color: var(--hover-bg-color);
+			}
+			/* 로그인 버튼 스타일 개선 */
+			.auth-box .btn-submit {
+				width: 100%;
+				padding: 12px 0;
+				font-size: 1rem;
+				font-weight: 600;
+				margin-top: 1rem;
+			}
+      .form-field input[type='password'], .form-field textarea {
+        width: 100%;
+        padding: 14px;
+        border: 1.5px solid var(--card-border-color);
+        border-radius: 8px;
+        background-color: var(--bg-color);
+        color: var(--text-color-primary);
+        font-size: 15px;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        font-family: inherit;
+      }
+			.auth-footer {
+				text-align: center;
+				padding-top: 80px;
+				font-size: 0.9rem;
+				color: var(--text-color-secondary);
+			}
+			.auth-footer a {
+				color: var(--primary-color);
+				text-decoration: none;
+				font-weight: 500;
+			}
+			.auth-footer a:hover {
+				text-decoration: underline;
+			}
+  </style>
+	</head>
+	<body>
+		<!-- 테마 변경 버튼: theme.js가 아이콘(dark_mode/light_mode)을 제어합니다 -->
+		<button class="theme-toggle auth-page-toggle" id="theme-toggle-btn">
+			<span class="material-icons">dark_mode</span>
+		</button>
+		<div class="auth-page-container">
+			<div class="auth-box">
+				<div class="auth-header">
+					<h2 class="title">Admin 로그인</h2>
+					<p class="desc">대시보드에 접근하려면 로그인하세요.</p>
+				</div>
+
+				<form method="post" action="{% url 'pybo:login' %}">
+					{% csrf_token %}
+					<input type="hidden" name="next" value="{{ request.GET.next|default:'' }}" />
+
+					{% if form.errors %}
+					<div class="form-errors">
+						<p>아이디 또는 비밀번호가 올바르지 않습니다.</p>
+					</div>
+					{% endif %}
+
+					<div class="form-field" style="margin-top: 10px;">
+						<label for="username">사용자 ID</label>
+						<input type="text" name="username" id="username" value="{{ form.username.value|default_if_none:'' }}" required />
+					</div>
+
+					<div class="form-field" style="margin-top: 10px;">
+						<label for="password">비밀번호</label>
+						<input type="password" name="password" id="password" required />
+					</div>
+					<button type="submit" class="btn-submit">로그인</button>
+				</form>
+        <div class="auth-footer">
+					계정이 없으신가요? <a href="{% url 'pybo:signup' %}">회원가입</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

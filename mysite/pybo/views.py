@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from .models import Bookmark, Post, User, PostLike, Comment
-from .forms import PostForm
+from .forms import PostForm, SignUpForm
 from django.utils import timezone
 from datetime import timedelta
 import json, collections
 from django.db.models import Count
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator
 
@@ -103,17 +105,15 @@ def post_detail(request, post_id):
     return render(request, 'post_detail.html', context)
 
 
+@login_required(login_url='pybo:login')
 def post_create(request):
-    # [개선] get_or_create를 사용하여 사용자가 없으면 생성하고, 있으면 가져옵니다.
-    # 이렇게 하면 코드가 더 안정적이고 간결해집니다.
-    # 실제 서비스에서는 request.user를 사용해야 합니다.
-    default_user, created = User.objects.get_or_create(username='admin_user')
-
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
+            # Django의 로그인 유저(request.user)와 pybo의 User 모델을 연결합니다.
+            pybo_user, created = User.objects.get_or_create(username=request.user.username)
             post = form.save(commit=False)
-            post.user = default_user
+            post.user = pybo_user
             post.save()
             return redirect('pybo:post_list')
     else:
@@ -121,20 +121,50 @@ def post_create(request):
     context = {'form': form}
     return render(request, 'post_form.html', context)
 
+@login_required(login_url='pybo:login')
 def post_update(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    # 작성자 본인인지 확인하는 로직 추가
+    if request.user.username != post.user.username:
+        return HttpResponseForbidden('이 게시글을 수정할 권한이 없습니다.')
+
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect('pybo:post_list')
+            # 수정 후 목록 대신 상세 페이지로 이동하여 사용자 경험 개선
+            return redirect('pybo:post_detail', post_id=post.id)
     else:
         form = PostForm(instance=post)
     context = {'form': form, 'post': post}
     return render(request, 'post_form.html', context)
 
+@login_required(login_url='pybo:login')
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    # 작성자 본인인지 확인하는 로직 추가
+    if request.user.username != post.user.username:
+        return HttpResponseForbidden('이 게시글을 삭제할 권한이 없습니다.')
+
     if request.method == 'POST': # POST 요청일 때만 삭제
         post.delete()
     return redirect('pybo:post_list')
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            # 1. Django의 인증용 User 생성
+            auth_user = form.save(commit=False)
+            auth_user.set_password(form.cleaned_data['password'])
+            auth_user.save()
+
+            # 2. 우리 앱의 User 모델과 연결하여 생성
+            User.objects.create(username=auth_user.username)
+
+            # 3. 회원가입 후 자동 로그인
+            auth_login(request, auth_user)
+            return redirect('pybo:index')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
