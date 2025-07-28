@@ -12,6 +12,25 @@
 			rel="stylesheet"
 		/>
 		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			/* 로그아웃 버튼 전용 스타일 */
+			.user-area .btn-logout {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 8px 16px;
+				border-radius: 8px;
+				background-color: #e53e3e; /* 빨간색 계열 */
+				color: #fff;
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 14px;
+				transition: background-color 0.2s ease;
+			}
+			.user-area .btn-logout:hover {
+				background-color: #c53030; /* 더 어두운 빨간색 */
+			}
+		</style>
 	</head>
 	<body>
 		<div class="dash-container">
@@ -27,6 +46,10 @@
 						<a href="{% url 'pybo:post_create' %}" class="btn-create">
 							<span class="material-icons">add</span>
 							글쓰기
+						</a>
+						<a href="{% url 'pybo:login' %}" class="btn-logout">
+							<span class="material-icons">logout</span>
+							로그아웃
 						</a>
 						<button class="theme-toggle" id="theme-toggle-btn">
 							<span class="material-icons">dark_mode</span>
