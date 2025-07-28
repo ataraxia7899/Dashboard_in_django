@@ -106,3 +106,39 @@
 	border-color: var(--btn-primary-bg);
 	color: var(--btn-primary-bg);
 }
+
+/* --- Responsive Styles --- */
+@media (max-width: 768px) {
+	.post-detail-container {
+		padding: 25px 20px; /* 좌우 패딩 축소 */
+		margin-top: 15px;
+	}
+
+	.post-title {
+		font-size: 24px; /* 제목 폰트 크기 조정 */
+	}
+
+	.post-meta {
+		font-size: 13px; /* 메타 정보 폰트 크기 조정 */
+		flex-wrap: wrap; /* 화면이 좁을 때 줄바꿈 허용 */
+	}
+
+	.post-content {
+		font-size: 15px; /* 본문 폰트 크기 조정 */
+		line-height: 1.7;
+		min-height: 150px; /* 최소 높이 조정 */
+	}
+
+	.post-actions {
+		flex-direction: column; /* 버튼을 세로로 쌓음 */
+		align-items: stretch; /* 버튼이 컨테이너 너비에 맞게 확장되도록 함 */
+		gap: 12px; /* 버튼 사이 간격 조정 */
+	}
+
+	.post-actions .btn-update,
+	.post-actions .btn-delete {
+		padding: 10px 20px; /* 버튼 패딩을 늘려 터치 영역 확보 */
+		font-size: 16px; /* 버튼 폰트 크기 조정 */
+		text-align: center;
+	}
+}

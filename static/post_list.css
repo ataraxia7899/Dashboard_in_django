@@ -212,3 +212,83 @@
 	color: var(--text-color-meta-light);
 	pointer-events: none;
 }
+
+/* --- Responsive Styles --- */
+@media (max-width: 800px) {
+	.post-list-container {
+		/* 고정 높이를 제거하고 내용에 따라 높이가 결정되도록 합니다. */
+		height: auto;
+		/* 테이블이 컨테이너를 벗어날 경우 가로 스크롤을 생성합니다. */
+		overflow-x: auto;
+		padding: 20px 15px 10px;
+	}
+
+	.post-table {
+		/* min-width는 600px로 유지되어, 이보다 작은 화면에서 스크롤이 발생합니다. */
+		font-size: 14px; /* 모바일 가독성을 위해 폰트 크기 조정 */
+	}
+
+	/* 화면이 좁을 때 중요도가 낮은 컬럼을 숨깁니다. */
+	.post-table .col-id,
+	.post-table .col-content {
+		display: none;
+	}
+
+	/* 남은 컬럼의 너비를 재조정합니다. */
+	.post-table .col-title {
+		width: 50%;
+	}
+	.post-table .col-author {
+		width: 15%;
+	}
+	.post-table .col-date {
+		width: 20%;
+	}
+	.post-table .col-manage {
+		width: 15%;
+	}
+
+	.post-table th,
+	.post-table td {
+		padding: 10px 8px; /* 패딩을 줄여 공간 확보 */
+	}
+
+	/* 관리 버튼을 세로로 쌓아 터치 용이성을 높입니다. */
+	.manage-buttons {
+		flex-direction: column;
+		gap: 6px;
+		align-items: stretch; /* 버튼이 셀 너비에 맞게 확장되도록 합니다. */
+	}
+
+	/* 페이지네이션 버튼을 더 작게 만듭니다. */
+	.pagination a {
+		min-width: 32px;
+		height: 32px;
+		font-size: 13px;
+		padding: 0 8px;
+	}
+}
+
+@media (max-width: 600px) {
+	.post-table {
+		/* 테이블이 화면 너비에 맞춰 완전히 줄어들 수 있도록 min-width를 제거합니다. */
+		/* 이렇게 하면 가로 스크롤이 사라지고 내용이 화면에 맞게 조정됩니다. */
+		min-width: 0;
+	}
+
+	/* 아주 작은 화면에서는 작성자 컬럼도 숨깁니다. */
+	.post-table .col-author {
+		display: none;
+	}
+
+	/* 남은 컬럼(제목, 날짜, 관리)의 너비를 재조정합니다. */
+	.post-table .col-title {
+		width: 60%; /* 제목 너비를 약간 줄여 다른 컬럼에 공간을 확보합니다. */
+	}
+	.post-table .col-date {
+		width: 20%;
+	}
+	.post-table .col-manage {
+		width: 20%; /* 관리 버튼을 위해 공간을 조금 더 확보합니다. */
+	}
+}
