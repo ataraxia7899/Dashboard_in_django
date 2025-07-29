@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.functions import TruncDate
+from django.db import transaction
 from django.core.paginator import Paginator
 
 @login_required(login_url='pybo:login')
@@ -161,18 +162,22 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # 1. Django의 인증용 User 생성
-            auth_user = form.save(commit=False)
-            auth_user.set_password(form.cleaned_data['password'])
-            auth_user.save()
+            # transaction.atomic을 사용하여 두 생성 작업을 하나의 트랜잭션으로 묶습니다.
+            # 이렇게 하면 둘 중 하나라도 실패할 경우 모든 변경사항이 롤백됩니다.
+            with transaction.atomic():
+                # 1. Django의 인증용 User 생성
+                auth_user = form.save(commit=False)
+                auth_user.set_password(form.cleaned_data['password'])
+                auth_user.save()
 
-            # 2. 우리 앱의 User 모델과 연결하여 생성
-            User.objects.create(username=auth_user.username)
+                # 2. 우리 앱의 User 모델과 연결하여 생성
+                # get_or_create를 사용하여 혹시라도 pybo_user가 이미 존재하는 경우
+                # 오류 대신 기존 객체를 가져오도록 하여 안정성을 높입니다.
+                User.objects.get_or_create(username=auth_user.username)
 
-            # 3. 회원가입 후 자동 로그인
-            auth_login(request, auth_user)
-            # 회원가입한 일반 사용자는 글 목록으로 이동시킵니다.
-            return redirect('pybo:post_list')
+                # 3. 회원가입 후 자동 로그인 및 리디렉션
+                auth_login(request, auth_user)
+                return redirect('pybo:post_list')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -206,3 +211,23 @@ class CustomLoginView(auth_views.LoginView):
         
         # 인증되지 않은 경우 (이론적으로는 도달하지 않음)
         return reverse_lazy('pybo:login')
+
+@login_required(login_url='pybo:login')
+@user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
+def user_delete(request, user_id):
+    """관리자만 사용자를 삭제할 수 있는 기능"""
+    # POST 요청일 때만 삭제를 처리합니다.
+    if request.method == 'POST':
+        # 삭제할 사용자 객체를 가져옵니다. (없으면 404 에러 발생)
+        user_to_delete = get_object_or_404(AuthUser, pk=user_id)
+        
+        # 현재 로그인한 사용자가 자기 자신을 삭제하려는 경우를 방지합니다.
+        if request.user.id == user_to_delete.id:
+            messages.error(request, '자기 자신은 삭제할 수 없습니다.')
+        else:
+            username = user_to_delete.username
+            user_to_delete.delete()
+            messages.success(request, f'사용자 "{username}" 님을 삭제했습니다.')
+            
+    # 처리 후에는 항상 사용자 목록 페이지로 리디렉션합니다.
+    return redirect('pybo:user_list')
