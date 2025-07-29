@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>댓글 수정</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_form.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			.form-container .form-input {
+				width: 100%;
+				padding: 12px 15px;
+				border: 1px solid var(--border-color);
+				border-radius: 4px;
+				background-color: var(--background-color);
+				color: var(--text-color-primary);
+				font-size: 1rem;
+				box-sizing: border-box;
+				transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+				resize: vertical;
+				min-height: 120px;
+			}
+			.form-container .form-input:focus {
+				outline: none;
+				border-color: var(--primary-color);
+				box-shadow: 0 0 0 3px var(--primary-color-light);
+			}
+			.form-actions .btn-primary {
+				padding: 12px 24px;
+				background-color: var(--primary-color);
+				color: #fff;
+				border: 1px solid white;
+				border-radius: 4px;
+				font-size: 1rem;
+				font-weight: 500;
+				cursor: pointer;
+				transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+			}
+			.form-actions .btn-primary:hover {
+				background-color: var(--primary-color-dark, #0056b3);
+				transform: translateY(-1px);
+			}
+			.form-actions .btn-primary:active {
+				transform: translateY(0);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="dash-container">
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">댓글 수정</div>
+						<div class="desc">댓글 내용을 수정합니다.</div>
+					</div>
+					<div class="user-area">
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
+						<a
+							href="{% url 'pybo:post_detail' comment.post.id %}"
+							class="btn-back"
+						>
+							<span class="material-icons">arrow_back</span> 게시글로 돌아가기
+						</a>
+					</div>
+				</div>
+
+				<!-- Comment Edit Form -->
+				<div class="form-container" style="display: flex; align-items: center;">
+					<form
+						method="post"
+						action="{% url 'pybo:comment_update' comment.id %}"
+            style="display:flex; width: 100%; align-items: center; gap: 30px"
+					>
+						{% csrf_token %}
+						<div class="form-group" style="width: 90%;">
+							{{ form.content }} {% if form.content.errors %}
+							<div class="form-error">
+								{% for error in form.content.errors %}<p>{{ error }}</p>{% endfor %}
+							</div>
+							{% endif %}
+						</div>
+						<div class="form-actions">
+							<button type="submit" class="btn-primary">수정 완료</button>
+						</div>
+					</form>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

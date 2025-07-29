@@ -23,4 +23,12 @@ urlpatterns = [
     path('', views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
+
+	# 좋아요, 북마크 기능 URL
+	path('post/<int:post_id>/like/', views.toggle_like, name='toggle_like'),
+	path('post/<int:post_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
+    # 댓글 기능 URL
+    path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
+    path('comment/<int:comment_id>/update/', views.comment_update, name='comment_update'),
+    path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
 ]

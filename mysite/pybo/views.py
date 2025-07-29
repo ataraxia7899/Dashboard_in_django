@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from .models import Bookmark, Post, User, PostLike, Comment
-from .forms import PostForm, SignUpForm
+from .forms import PostForm, SignUpForm, CommentForm
 from django.utils import timezone
 from datetime import timedelta
 import json, collections
@@ -105,8 +105,29 @@ def post_detail(request, post_id):
     """
     post_id에 해당하는 게시글의 상세 정보를 보여주는 뷰
     """
-    post = get_object_or_404(Post, pk=post_id)
-    context = {'post': post}
+    post = get_object_or_404(Post.objects.select_related('user'), pk=post_id)
+    
+    # 댓글 목록과 댓글 폼
+    comments = post.comments.select_related('user').order_by('created_at')
+    comment_form = CommentForm()
+
+    # 좋아요, 북마크 상태 확인 (로그인한 경우에만)
+    is_liked = False
+    is_bookmarked = False
+    if request.user.is_authenticated:
+        # [FIX] 두 종류의 User 모델 혼용으로 인한 ORM 오류를 피하기 위해 직접 모델을 쿼리합니다.
+        # post.likes.filter() 대신 PostLike.objects.filter()를 사용합니다.
+        # [FIX 2] user 객체 대신 user.id를 사용하여 타입 에러를 회피합니다.
+        is_liked = PostLike.objects.filter(post=post, user_id=request.user.id).exists()
+        is_bookmarked = Bookmark.objects.filter(post=post, user_id=request.user.id).exists()
+
+    context = {
+        'post': post,
+        'comments': comments,
+        'comment_form': comment_form,
+        'is_liked': is_liked,
+        'is_bookmarked': is_bookmarked,
+    }
     return render(request, 'post_detail.html', context)
 
 
@@ -245,3 +266,113 @@ def user_delete(request, user_id):
             
     # 처리 후에는 항상 사용자 목록 페이지로 리디렉션합니다.
     return redirect('pybo:user_list')
+
+@login_required(login_url='pybo:login')
+def toggle_bookmark(request, post_id):
+    """AJAX 요청을 받아 게시글의 북마크 상태를 토글합니다."""
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=post_id)
+        pybo_user, _ = User.objects.get_or_create(username=request.user.username)
+
+        bookmark, created = Bookmark.objects.get_or_create(
+            post=post,
+            user=pybo_user
+        )
+
+        if not created:
+            # 북마크가 이미 존재하면 삭제합니다.
+            bookmark.delete()
+            is_bookmarked = False
+        else:
+            # 새로 생성되었으면 상태를 True로 설정합니다.
+            is_bookmarked = True
+        
+        # JSON 응답으로 현재 북마크 상태와 총 북마크 수를 반환합니다.
+        return JsonResponse({'is_bookmarked': is_bookmarked, 'bookmark_count': post.bookmarks.count()})
+    
+    # POST 요청이 아니면 상세 페이지로 리디렉션합니다.
+    return redirect('pybo:post_detail', post_id=post_id)
+
+@login_required(login_url='pybo:login')
+def toggle_like(request, post_id):
+    """AJAX 요청을 받아 게시글의 좋아요 상태를 토글합니다."""
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=post_id)
+        pybo_user, _ = User.objects.get_or_create(username=request.user.username)
+
+        like, created = PostLike.objects.get_or_create(
+            post=post,
+            user=pybo_user
+        )
+
+        if not created:
+            # 이미 좋아요를 눌렀으면 취소합니다.
+            like.delete()
+            is_liked = False
+        else:
+            # 새로 생성되었으면 상태를 True로 설정합니다.
+            is_liked = True
+        
+        # JSON 응답으로 현재 좋아요 상태와 총 좋아요 수를 반환합니다.
+        return JsonResponse({'is_liked': is_liked, 'like_count': post.likes.count()})
+    
+    # POST 요청이 아니면 상세 페이지로 리디렉션합니다.
+    return redirect('pybo:post_detail', post_id=post_id)
+
+@login_required(login_url='pybo:login')
+def add_comment(request, post_id):
+    """댓글을 추가합니다."""
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+
+            # [FIX] request.user (AuthUser)를 pybo.models.User로 변환합니다.
+            pybo_user, _ = User.objects.get_or_create(username=request.user.username)
+            comment.user = pybo_user
+
+            comment.save()
+            messages.success(request, '댓글이 성공적으로 등록되었습니다.')
+        else:
+            # 폼이 유효하지 않을 경우, 오류 메시지를 표시합니다.
+            messages.error(request, '댓글 내용에 오류가 있습니다. 다시 시도해주세요.')
+    # 처리 후에는 항상 게시글 상세 페이지로 리디렉션합니다.
+    return redirect('pybo:post_detail', post_id=post.id)
+
+@login_required(login_url='pybo:login')
+def comment_update(request, comment_id):
+    """댓글을 수정합니다."""
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.user.username != comment.user.username:
+        messages.error(request, '댓글을 수정할 권한이 없습니다.')
+        return redirect('pybo:post_detail', post_id=comment.post.id)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect('pybo:post_detail', post_id=comment.post.id)
+    else:
+        form = CommentForm(instance=comment)
+    
+    return render(request, 'comment_form.html', {'form': form, 'comment': comment})
+
+@login_required(login_url='pybo:login')
+def delete_comment(request, comment_id):
+    """댓글을 삭제합니다."""
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # [FIX] 다른 User 모델 간의 비교 오류를 수정하고, 사용자 이름으로 권한을 확인합니다.
+    if request.user.username != comment.user.username and not request.user.is_superuser:
+        messages.error(request, '댓글을 삭제할 권한이 없습니다.')
+        return redirect('pybo:post_detail', post_id=comment.post.id)
+
+    if request.method == 'POST':
+        post_id = comment.post.id
+        comment.delete()
+        messages.success(request, '댓글이 성공적으로 삭제되었습니다.')
+        return redirect('pybo:post_detail', post_id=post_id)
+    
+    # POST 요청이 아니면 해당 댓글이 있는 상세 페이지로 리디렉션합니다.
+    return redirect('pybo:post_detail', post_id=comment.post.id)

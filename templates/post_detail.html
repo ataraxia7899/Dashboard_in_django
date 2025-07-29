@@ -11,8 +11,160 @@
 			rel="stylesheet"
 		/>
 		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			.post-actions-interactive {
+				margin-top: 1.5rem;
+				padding-bottom: 1.5rem;
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				border-bottom: 1px solid var(--border-color);
+			}
+			.btn-icon {
+				background: none;
+				border: 1px solid var(--border-color);
+				border-radius: 20px;
+				padding: 8px 16px;
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 1rem;
+				color: var(--text-color-secondary);
+				transition: all 0.2s ease-in-out;
+			}
+			.btn-icon:hover {
+				background-color: var(--background-color-offset);
+				border-color: var(--primary-color);
+			}
+			.btn-icon .material-icons {
+				font-size: 22px;
+				vertical-align: middle;
+			}
+			.btn-icon.active {
+				background-color: var(--primary-color-light);
+				color: var(--primary-color);
+				font-weight: 500;
+				border-color: var(--primary-color);
+			}
+
+			/* Comment Section Styles */
+			.comment-section {
+				margin-top: 2rem;
+				border-top: 1px solid var(--border-color);
+				padding-top: 2rem;
+			}
+			.comment-section h3 {
+				margin-bottom: 1.5rem;
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: var(--text-color-primary);
+			}
+
+			/* Comment Form */
+			.comment-form {
+				margin-bottom: 2.5rem;
+			}
+			.comment-form-group {
+				display: flex;
+				gap: 10px;
+				align-items: center;
+			}
+			.comment-form-group .form-input-wrapper {
+				flex-grow: 1;
+			}
+			.comment-form-group .form-error {
+				color: var(--danger-color);
+				font-size: 0.875rem;
+				margin-top: 5px;
+			}
+			.comment-form-group .btn-primary {
+				padding: 10px 20px;
+				height: fit-content;
+				flex-shrink: 0;
+				background-color: var(--primary-color);
+				color: #fff;
+				border: 1px solid white;
+				border-radius: 4px;
+				font-size: 1rem;
+				font-weight: 500;
+				cursor: pointer;
+				transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+			}
+			.comment-form .btn-primary:hover {
+				/* Assuming --primary-color-dark exists from theme.js or dashboard.css */
+				background-color: var(--primary-color-dark, #0056b3);
+				transform: translateY(-1px);
+			}
+			.comment-form .btn-primary:active {
+				transform: translateY(0);
+			}
+
+			/* Improve comment textarea style */
+			.comment-form textarea.form-input {
+				width: 95%;
+				padding: 10px 15px;
+				border: 1px solid var(--border-color);
+				border-radius: 4px;
+				background-color: var(--background-color);
+				color: var(--text-color-primary);
+				font-size: 1rem;
+				line-height: 1.5;
+				transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+				resize: vertical;
+				min-height: 80px;
+			}
+			.comment-form textarea.form-input:focus {
+				outline: none;
+				border-color: var(--primary-color);
+				box-shadow: 0 0 0 3px var(--primary-color-light);
+			}
+			.login-prompt {
+				padding: 1rem;
+				background-color: var(--background-color-offset);
+				border-radius: 4px;
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+
+			/* Comment List */
+			.comment-list .comment-item {
+				display: flex;
+				gap: 15px;
+				padding-bottom: 1.5rem;
+				margin-bottom: 1.5rem;
+				border-bottom: 1px solid var(--border-color-light);
+			}
+			.comment-list .comment-item:last-child {
+				border-bottom: none;
+				margin-bottom: 0;
+			}
+			.comment-author-icon .material-icons {
+				font-size: 40px;
+				color: var(--text-color-secondary);
+				background-color: var(--background-color-offset);
+				border-radius: 50%;
+				padding: 5px;
+			}
+			.comment-body { flex-grow: 1; }
+			.comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+			.comment-author { font-weight: 500; color: var(--text-color-primary); }
+			.comment-meta { display: flex; align-items: center; gap: 10px; }
+			.comment-date { font-size: 0.875rem; color: var(--text-color-secondary); }
+			.comment-delete-btn { background: none; border: none; cursor: pointer; color: var(--text-color-secondary); padding: 0; line-height: 1; }
+			.comment-edit-btn { color: var(--text-color-secondary); line-height: 1; text-decoration: none; }
+			.comment-edit-btn:hover .material-icons { color: var(--primary-color); }
+			.comment-edit-btn .material-icons { font-size: 18px; vertical-align: middle; transition: color 0.2s; }
+			.comment-delete-btn:hover .material-icons { color: var(--danger-color); }
+			.comment-delete-btn .material-icons { font-size: 18px; vertical-align: middle; transition: color 0.2s; }
+			.comment-content { line-height: 1.6; color: var(--text-color-secondary); word-break: break-word; }
+			.no-comments { text-align: center; color: var(--text-color-secondary); padding: 2rem 0; }
+		</style>
 	</head>
-	<body>
+	<body
+		data-is-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"
+		data-login-url="{% url 'pybo:login' %}?next={{ request.path|urlencode }}"
+	>
 		<div class="dash-container">
 			<main class="main-content">
 				<!-- Header -->
@@ -46,23 +198,190 @@
 						</div>
 					</div>
 					<div class="post-content">{{ post.content|linebreaksbr }}</div>
-					{% if user.is_superuser or user.username == post.user.username %}
-						<div class="post-actions">
-							<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
-								>수정</a
-							>
-							<form
-								action="{% url 'pybo:post_delete' post.id %}"
-								method="post"
-								onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
-							>
-								{% csrf_token %}
-								<button type="submit" class="btn-delete">삭제</button>
-							</form>
-						</div>
+
+					<!-- 좋아요 / 북마크 버튼 영역 -->
+					<div class="post-actions-interactive">
+						<!-- 좋아요 버튼 -->
+						<button id="like-btn" data-post-id="{{ post.id }}" class="btn-icon {% if is_liked %}active{% endif %}">
+							<span class="material-icons">
+								{% if is_liked %}favorite{% else %}favorite_border{% endif %}
+							</span>
+							<span>좋아요</span>
+							<span id="like-count">{{ post.likes.count }}</span>
+						</button>
+
+						<!-- 북마크 버튼 -->
+						<button id="bookmark-btn" data-post-id="{{ post.id }}" class="btn-icon {% if is_bookmarked %}active{% endif %}">
+							<span class="material-icons">
+								{% if is_bookmarked %}bookmark{% else %}bookmark_border{% endif %}
+							</span>
+							<span>북마크</span>
+							<span id="bookmark-count">{{ post.bookmarks.count }}</span>
+						</button>
+					</div>
+
+					{% if user.is_authenticated %}
+						{% if user.is_superuser or user.username == post.user.username %}
+							<div class="post-actions">
+								<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
+									>수정</a
+								>
+								<form
+									action="{% url 'pybo:post_delete' post.id %}"
+									method="post"
+									onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');"
+								>
+									{% csrf_token %}
+									<button type="submit" class="btn-delete">삭제</button>
+								</form>
+							</div>
+						{% endif %}
 					{% endif %}
+				</div>
+
+				<!-- Comment Section -->
+				<div class="comment-section">
+					<h3>댓글 ({{ comments.count }})</h3>
+
+					<!-- Comment Form -->
+					{% if user.is_authenticated %}
+					<form action="{% url 'pybo:add_comment' post.id %}" method="post" class="comment-form">
+						{% csrf_token %}
+						<div class="comment-form-group">
+							<div class="form-input-wrapper">
+								{{ comment_form.content }}
+								{% for error in comment_form.content.errors %}
+									<p class="form-error">{{ error }}</p>
+								{% endfor %}
+							</div>
+							<button type="submit" class="btn-primary">등록</button>
+						</div>
+					</form>
+					{% else %}
+					<p class="login-prompt">
+						<a href="{% url 'pybo:login' %}?next={{ request.path|urlencode }}">로그인</a> 후 댓글을 작성할 수 있습니다.
+					</p>
+					{% endif %}
+
+					<!-- Comment List -->
+					<div class="comment-list">
+						{% for comment in comments %}
+						<div class="comment-item">
+							<div class="comment-author-icon">
+								<span class="material-icons">person</span>
+							</div>
+							<div class="comment-body">
+								<div class="comment-header">
+									<span class="comment-author">{{ comment.user.username }}</span>
+									<div class="comment-meta">
+										<span class="comment-date">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
+										{% if request.user.username == comment.user.username %}
+											<a href="{% url 'pybo:comment_update' comment.id %}" class="comment-edit-btn" title="수정">
+												<span class="material-icons">edit</span>
+											</a>
+										{% endif %}
+										
+										{% if request.user.username == comment.user.username or request.user.is_superuser %}
+										<form action="{% url 'pybo:delete_comment' comment.id %}" method="post" onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?');">
+											{% csrf_token %}
+											<button type="submit" class="comment-delete-btn" title="삭제">
+												<span class="material-icons">delete</span>
+											</button>
+										</form>
+										{% endif %}
+									</div>
+								</div>
+								<div class="comment-content">
+									{{ comment.content|linebreaksbr }}
+								</div>
+							</div>
+						</div>
+						{% empty %}
+						<p class="no-comments">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>
+						{% endfor %}
+					</div>
 				</div>
 			</main>
 		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				// CSRF 토큰을 가져오는 함수 (AJAX 요청에 필요)
+				function getCsrfToken() {
+					const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+					return tokenInput ? tokenInput.value : '';
+				}
+
+				// 페이지 데이터 가져오기
+				const isAuthenticated = document.body.dataset.isAuthenticated === 'true';
+				const loginUrl = document.body.dataset.loginUrl;
+
+				// 공통 AJAX 요청 함수
+				function sendToggleRequest(url, button, countElement, activeClass, activeIcon, inactiveIcon) {
+					if (!isAuthenticated) {
+						alert('이 기능은 로그인이 필요합니다.');
+						window.location.href = loginUrl;
+						return;
+					}
+
+					fetch(url, {
+						method: 'POST',
+						headers: {
+							'X-CSRFToken': getCsrfToken(),
+							'Content-Type': 'application/json'
+						},
+					})
+					.then(response => {
+						if (!response.ok) throw new Error('서버 응답 오류');
+						return response.json();
+					})
+					.then(data => {
+						const icon = button.querySelector('.material-icons');
+						const is_active = data.is_bookmarked !== undefined ? data.is_bookmarked : data.is_liked;
+						const count = data.bookmark_count !== undefined ? data.bookmark_count : data.like_count;
+
+						if (is_active) {
+							button.classList.add(activeClass);
+							icon.textContent = activeIcon;
+						} else {
+							button.classList.remove(activeClass);
+							icon.textContent = inactiveIcon;
+						}
+						countElement.textContent = count;
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert('처리 중 오류가 발생했습니다.');
+					});
+				}
+
+				// 좋아요 버튼 이벤트 처리
+				const likeBtn = document.getElementById('like-btn');
+				if (likeBtn) {
+					likeBtn.addEventListener('click', function(e) {
+						e.preventDefault();
+						sendToggleRequest(
+							`/post/${this.dataset.postId}/like/`,
+							this,
+							document.getElementById('like-count'),
+							'active', 'favorite', 'favorite_border'
+						);
+					});
+				}
+
+				// 북마크 버튼 이벤트 처리
+				const bookmarkBtn = document.getElementById('bookmark-btn');
+				if (bookmarkBtn) {
+					bookmarkBtn.addEventListener('click', function(e) {
+						e.preventDefault();
+						sendToggleRequest(
+							`/post/${this.dataset.postId}/bookmark/`,
+							this,
+							document.getElementById('bookmark-count'),
+							'active', 'bookmark', 'bookmark_border'
+						);
+					});
+				}
+			});
+		</script>
 	</body>
 </html>
