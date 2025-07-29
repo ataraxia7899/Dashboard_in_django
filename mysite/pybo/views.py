@@ -14,6 +14,19 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.functions import TruncDate
 from django.db import transaction
 from django.core.paginator import Paginator
+from functools import wraps
+
+def get_pybo_user(view_func):
+    """
+    @login_required가 적용된 뷰에서 request.user를 기반으로
+    pybo.models.User 객체를 찾아 뷰의 인자로 전달하는 데코레이터.
+    """
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        # 데코레이터가 적용된 뷰는 @login_required가 선행되어야 합니다.
+        pybo_user, _ = User.objects.get_or_create(username=request.user.username)
+        return view_func(request, pybo_user, *args, **kwargs)
+    return _wrapped_view
 
 @login_required(login_url='pybo:login')
 @user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
@@ -123,11 +136,14 @@ def post_detail(request, post_id):
     is_liked = False
     is_bookmarked = False
     if request.user.is_authenticated:
-        # [FIX] 두 종류의 User 모델 혼용으로 인한 ORM 오류를 피하기 위해 직접 모델을 쿼리합니다.
-        # post.likes.filter() 대신 PostLike.objects.filter()를 사용합니다.
-        # [FIX 2] user 객체 대신 user.id를 사용하여 타입 에러를 회피합니다.
-        is_liked = PostLike.objects.filter(post=post, user_id=request.user.id).exists()
-        is_bookmarked = Bookmark.objects.filter(post=post, user_id=request.user.id).exists()
+        # Django의 인증 유저(request.user)와 연결된 pybo 앱의 User를 가져옵니다.
+        # get()은 객체가 없을 때 오류를 발생시키므로, filter().first()를 사용하여 안전하게 조회합니다.
+        pybo_user = User.objects.filter(username=request.user.username).first()
+        
+        if pybo_user:
+            # pybo_user 객체를 사용하여 좋아요 및 북마크 상태를 정확히 확인합니다.
+            is_liked = PostLike.objects.filter(post=post, user=pybo_user).exists()
+            is_bookmarked = Bookmark.objects.filter(post=post, user=pybo_user).exists()
 
     context = {
         'post': post,
@@ -140,12 +156,11 @@ def post_detail(request, post_id):
 
 
 @login_required(login_url='pybo:login')
-def post_create(request):
+@get_pybo_user
+def post_create(request, pybo_user):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            # Django의 로그인 유저(request.user)와 pybo의 User 모델을 연결합니다.
-            pybo_user, created = User.objects.get_or_create(username=request.user.username)
             post = form.save(commit=False)
             post.user = pybo_user
             post.save()
@@ -276,11 +291,11 @@ def user_delete(request, user_id):
     return redirect('pybo:user_list')
 
 @login_required(login_url='pybo:login')
-def toggle_bookmark(request, post_id):
+@get_pybo_user
+def toggle_bookmark(request, pybo_user, post_id):
     """AJAX 요청을 받아 게시글의 북마크 상태를 토글합니다."""
     if request.method == 'POST':
         post = get_object_or_404(Post, pk=post_id)
-        pybo_user, _ = User.objects.get_or_create(username=request.user.username)
 
         bookmark, created = Bookmark.objects.get_or_create(
             post=post,
@@ -302,11 +317,11 @@ def toggle_bookmark(request, post_id):
     return redirect('pybo:post_detail', post_id=post_id)
 
 @login_required(login_url='pybo:login')
-def toggle_like(request, post_id):
+@get_pybo_user
+def toggle_like(request, pybo_user, post_id):
     """AJAX 요청을 받아 게시글의 좋아요 상태를 토글합니다."""
     if request.method == 'POST':
         post = get_object_or_404(Post, pk=post_id)
-        pybo_user, _ = User.objects.get_or_create(username=request.user.username)
 
         like, created = PostLike.objects.get_or_create(
             post=post,
@@ -328,7 +343,8 @@ def toggle_like(request, post_id):
     return redirect('pybo:post_detail', post_id=post_id)
 
 @login_required(login_url='pybo:login')
-def add_comment(request, post_id):
+@get_pybo_user
+def add_comment(request, pybo_user, post_id):
     """댓글을 추가합니다."""
     post = get_object_or_404(Post, pk=post_id)
     if request.method == 'POST':
@@ -336,9 +352,6 @@ def add_comment(request, post_id):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
-
-            # [FIX] request.user (AuthUser)를 pybo.models.User로 변환합니다.
-            pybo_user, _ = User.objects.get_or_create(username=request.user.username)
             comment.user = pybo_user
 
             comment.save()
