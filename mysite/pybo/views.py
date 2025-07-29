@@ -215,19 +215,33 @@ class CustomLoginView(auth_views.LoginView):
 @login_required(login_url='pybo:login')
 @user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
 def user_delete(request, user_id):
-    """관리자만 사용자를 삭제할 수 있는 기능"""
+    """관리자만 사용자를 삭제할 수 있는 기능. auth_user와 pybo_user 모두 삭제합니다."""
     # POST 요청일 때만 삭제를 처리합니다.
     if request.method == 'POST':
-        # 삭제할 사용자 객체를 가져옵니다. (없으면 404 에러 발생)
+        # 삭제할 Django 인증 사용자 객체를 가져옵니다.
         user_to_delete = get_object_or_404(AuthUser, pk=user_id)
         
-        # 현재 로그인한 사용자가 자기 자신을 삭제하려는 경우를 방지합니다.
+        # 현재 로그인한 관리자가 자기 자신을 삭제하려는 경우를 방지합니다.
         if request.user.id == user_to_delete.id:
             messages.error(request, '자기 자신은 삭제할 수 없습니다.')
         else:
-            username = user_to_delete.username
-            user_to_delete.delete()
-            messages.success(request, f'사용자 "{username}" 님을 삭제했습니다.')
+            # 두 테이블의 삭제 작업을 하나의 트랜잭션으로 묶어 데이터 일관성을 보장합니다.
+            try:
+                with transaction.atomic():
+                    username = user_to_delete.username
+                    
+                    # 1. pybo 앱의 User 모델에서 해당 사용자 삭제
+                    #    - filter().delete()는 대상이 없어도 오류를 발생시키지 않아 안전합니다.
+                    User.objects.filter(username=username).delete()
+                    
+                    # 2. Django의 인증 User 모델에서 사용자 삭제
+                    #    - 이 작업이 실행되면 관련 Post, Comment 등도 on_delete 정책에 따라 처리됩니다.
+                    user_to_delete.delete()
+                    
+                    messages.success(request, f'사용자 "{username}" 님을 성공적으로 삭제했습니다.')
+            except Exception as e:
+                # 트랜잭션 중 오류 발생 시 사용자에게 알립니다.
+                messages.error(request, f'사용자 삭제 중 오류가 발생했습니다: {e}')
             
     # 처리 후에는 항상 사용자 목록 페이지로 리디렉션합니다.
     return redirect('pybo:user_list')
