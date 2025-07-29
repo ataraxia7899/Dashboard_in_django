@@ -206,22 +206,26 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # transaction.atomic을 사용하여 두 생성 작업을 하나의 트랜잭션으로 묶습니다.
-            # 이렇게 하면 둘 중 하나라도 실패할 경우 모든 변경사항이 롤백됩니다.
-            with transaction.atomic():
-                # 1. Django의 인증용 User 생성
-                auth_user = form.save(commit=False)
-                auth_user.set_password(form.cleaned_data['password'])
-                auth_user.save()
+            username = form.cleaned_data.get('username')
+            # pybo.models.User의 username max_length(50)에 맞춰 길이를 검사합니다.
+            if len(username) > 50:
+                # 길이가 길면 폼에 오류를 추가하고, 템플릿에 전달하여 메시지를 표시합니다.
+                form.add_error('username', '사용자 ID는 50자 이하로 입력해주세요.')
+            else:
+                # 유효성 검사를 통과하면 기존 로직을 실행합니다.
+                # transaction.atomic을 사용하여 두 생성 작업을 하나의 트랜잭션으로 묶습니다.
+                with transaction.atomic():
+                    # 1. Django의 인증용 User 생성
+                    auth_user = form.save(commit=False)
+                    auth_user.set_password(form.cleaned_data['password'])
+                    auth_user.save()
 
-                # 2. 우리 앱의 User 모델과 연결하여 생성
-                # get_or_create를 사용하여 혹시라도 pybo_user가 이미 존재하는 경우
-                # 오류 대신 기존 객체를 가져오도록 하여 안정성을 높입니다.
-                User.objects.get_or_create(username=auth_user.username)
+                    # 2. 우리 앱의 User 모델과 연결하여 생성
+                    User.objects.get_or_create(username=auth_user.username)
 
-                # 3. 회원가입 후 자동 로그인 및 리디렉션
-                auth_login(request, auth_user)
-                return redirect('pybo:post_list')
+                    # 3. 회원가입 후 자동 로그인 및 리디렉션
+                    auth_login(request, auth_user)
+                    return redirect('pybo:post_list')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
