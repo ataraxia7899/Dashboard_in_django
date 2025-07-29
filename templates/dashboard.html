@@ -136,23 +136,25 @@
 							</li>
 						</ul>
 					</div>
-					<div class="mini-list-card">
-						<div class="mini-list-title">최근 가입자</div>
-						<ul class="user-list">
-							{% for user in recent_users %}
-							<li>
-								<span
-									>{{ user.username }}
-									<span class="user-meta">
-										가입: {{ user.join_date|date:"Y년 n월 j일" }}
+					<a href="{% url 'pybo:user_list' %}" class="card-link">
+						<div class="mini-list-card">
+							<div class="mini-list-title">최근 가입자</div>
+							<ul class="user-list">
+								{% for user in recent_users %}
+								<li>
+									<span
+										>{{ user.username }}
+										<span class="user-meta">
+											가입: {{ user.join_date|date:"Y년 n월 j일" }}
+										</span>
 									</span>
-								</span>
-							</li>
-							{% empty %}
-							<li>가입한 사용자가 없습니다.</li>
-							{% endfor %}
-						</ul>
-					</div>
+								</li>
+								{% empty %}
+								<li>가입한 사용자가 없습니다.</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</a>
 					<a href="{% url 'pybo:post_list' %}" class="card-link">
 						<div class="mini-list-card">
 							<div class="mini-list-title">최근 게시글</div>

@@ -9,6 +9,7 @@ urlpatterns = [
     # 예: 대시보드 (http://.../pybo/) -> {% url 'pybo:index' %}
     path('dashboard/', views.index, name='index'),
     path('users/', views.user_list, name='user_list'),
+    path('users/delete/<int:user_id>/', views.user_delete, name='user_delete'),
     # 예: 게시글 목록 (http://.../pybo/post_list/) -> {% url 'pybo:post_list' %}
     path('post_list/', views.post_list, name='post_list'),
     

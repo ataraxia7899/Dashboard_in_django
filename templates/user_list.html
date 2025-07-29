@@ -11,6 +11,23 @@
 			rel="stylesheet"
 		/>
 		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			.btn-delete {
+				background-color: var(--danger-color, #dc3545);
+				color: #fff;
+				border: none;
+				padding: 5px 10px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 14px;
+				text-decoration: none;
+				display: inline-block;
+				text-align: center;
+			}
+			.btn-delete:hover {
+				background-color: var(--danger-color-dark, #c82333);
+			}
+		</style>
 	</head>
 	<body>
 		<div class="dash-container">
@@ -30,6 +47,17 @@
 						</a>
 					</div>
 				</div>
+
+				<!-- Messages -->
+				{% if messages %}
+				<div class="messages" style="margin-bottom: 1rem;">
+					{% for message in messages %}
+					<div class="alert alert-{{ message.tags }}" style="padding: 1rem; border-radius: 4px; background-color: var(--background-color-offset); border: 1px solid var(--border-color);">
+						{{ message }}
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
 
 				<!-- User List Table -->
 				<div class="post-list-container">
@@ -61,7 +89,12 @@
 									{% endif %}
 								</td>
 								<td class="manage-buttons">
-									<!-- 향후 사용자 수정/삭제 버튼 추가 가능 -->
+									{% if request.user.id != u.id %}
+									<form action="{% url 'pybo:user_delete' u.id %}" method="post" style="display: inline;" onsubmit="return confirm('정말로 이 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+										{% csrf_token %}
+										<button type="submit" class="btn-delete">삭제</button>
+									</form>
+									{% endif %}
 								</td>
 							</tr>
 							{% empty %}
