@@ -20,6 +20,10 @@
 				color: var(--text-color-secondary);
 				margin-top: 8px;
 			}
+			.current-file img {
+				max-width: 200px;
+				border-radius: 4px;
+			}
 		</style>
 	</head>
 	<body>
@@ -44,7 +48,7 @@
 				</div>
 
 				<!-- Post Form -->
-				<div class="form-container" style="height: 55%;">
+				<div class="form-container" style="height: max-content; padding-bottom: 80px;">
 					<form method="post" enctype="multipart/form-data">
 						{% csrf_token %}
 						<!-- 오류 표시 -->
@@ -72,7 +76,14 @@
 							<label for="{{ form.attachment.id_for_label }}">{{ form.attachment.label }}</label>
 							{{ form.attachment }}
 							{% if post.attachment %}
-							<p class="current-file">현재 파일: <a href="{{ post.attachment.url }}" target="_blank">{{ post.attachment.name|cut:"attachments/" }}</a></p>
+								<div class="current-file">
+									{% if post.is_image %}
+										<p>현재 이미지:</p>
+										<img src="{{ post.attachment.url }}" alt="현재 첨부된 이미지">
+									{% else %}
+										<p>현재 파일: <a href="{{ post.attachment.url }}" target="_blank">{{ post.attachment.name|cut:"attachments/" }}</a></p>
+									{% endif %}
+								</div>
 							{% endif %}
 						</div>
 						<button type="submit" class="btn-submit">저장하기</button>

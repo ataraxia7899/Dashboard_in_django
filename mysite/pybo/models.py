@@ -22,6 +22,14 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def is_image(self):
+        """첨부파일이 이미지 형식인지 확인하는 속성"""
+        if self.attachment:
+            image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+            return any(self.attachment.name.lower().endswith(ext) for ext in image_extensions)
+        return False
+
     class Meta:
         db_table = 'post'
 

@@ -47,11 +47,19 @@
 				font-weight: 500;
 				border-color: var(--primary-color);
 			}
+			.post-image-preview {
+				margin-top: 1.5rem; /* 위치 이동에 따른 여백 조정 */
+				text-align: center;
+			}
+			.post-image-preview img {
+				max-width: 100%;
+				max-height: 600px;
+				border-radius: 8px;
+			}
 			.post-attachment {
-				margin: 1.5rem 0;
+				margin-top: 1.5rem; /* 위치 이동에 따른 여백 조정 */
 				padding: 1rem;
 				background-color: var(--background-color-offset);
-				border: 1px solid var(--border-color-light);
 				border-radius: 6px;
 				display: flex;
 				align-items: center;
@@ -208,15 +216,21 @@
 						</div>
 					</div>
 
-					{% if post.attachment %}
-					<div class="post-attachment">
-						<span class="material-icons">attach_file</span>
-						<strong>첨부파일:</strong>
-						<a href="{{ post.attachment.url }}" download>{{ post.attachment.name|cut:"attachments/" }}</a>
-					</div>
-					{% endif %}
-
 					<div class="post-content">{{ post.content|linebreaksbr }}</div>
+
+					{% if post.attachment %}
+						{% if post.is_image %}
+							<div class="post-image-preview">
+								<img src="{{ post.attachment.url }}" alt="첨부 이미지: {{ post.attachment.name }}">
+							</div>
+						{% else %}
+							<div class="post-attachment">
+								<span class="material-icons">attach_file</span>
+								<strong>첨부파일:</strong>
+								<a href="{{ post.attachment.url }}" download>{{ post.attachment.name|cut:"attachments/" }}</a>
+							</div>
+						{% endif %}
+					{% endif %}
 
 					<!-- 좋아요 / 북마크 버튼 영역 -->
 					<div class="post-actions-interactive">
