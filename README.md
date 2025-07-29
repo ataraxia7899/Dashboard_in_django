@@ -10,7 +10,7 @@ Django의 기본 개념을 익히고 웹 애플리케이션의 전체적인 흐�
 
 - **Backend**: Django
 - **Language**: Python
-- **Database**: SQLite (기본 설정)
+- **Database**: SQLite (기본 설정), mariaDB
 
 ## 🏃‍♂️ 로컬에서 프로젝트 실행하기
 
@@ -87,6 +87,7 @@ python manage.py runserver
 │       ├── __init__.py                          # Python 패키지 초기화 파일
 │       ├── admin.py                             # Django 관리자 페이지 설정
 │       ├── apps.py                              # 앱 설정 클래스
+│       ├── forms.py                             # Django 폼 정의
 │       ├── models.py                            # 데이터베이스 모델 정의
 │       ├── tests.py                             # 단위 테스트 코드
 │       ├── urls.py                              # 앱 내부 URL 라우팅
@@ -95,15 +96,99 @@ python manage.py runserver
 │       └── migrations/                          # DB 마이그레이션 파일
 │           ├── __init__.py                      # 마이그레이션 패키지 초기화
 │           └── __pycache__/                     # 마이그레이션 바이트코드 캐시
-├── static/                                      # 정적 파일(CSS, JS 등)
-│   ├── dashboard.css                            # 대시보드 스타일 CSS
-│   ├── post_list.css                            # 게시글 목록 스타일 CSS
-│   └── js/
-│       └── theme.js                             # 다크/라이트 테마 JS
+├── static/                                      # 정적 파일(CSS, JS, 이미지 등)
+│   ├── dashboard.css                            # 대시보드 전용 스타일
+│   ├── post_list.css                            # 게시글 목록 전용 스타일
+│   └── js/                                      # JavaScript 파일 폴더
+│       └── theme.js                             # 다크/라이트 테마 전환 스크립트
 └── templates/                                   # HTML 템플릿 폴더
-    ├── dashboard.html                           # 대시보드 페이지 템플릿
-    └── post_list.html                           # 게시글 목록 페이지 템플릿
+    ├── dashboard.html                           # 대시보드 페이지
+    ├── post_list.html                           # 게시글 목록 페이지
+    ├── post_detail.html                         # 게시글 상세 페이지
+    ├── post_form.html                           # 게시글 생성/수정 폼
+    ├── comment_form.html                        # 댓글 수정 폼
+    ├── login.html                               # 로그인 페이지
+    ├── signup.html                              # 회원가입 페이지
+    └── user_list.html                           # (관리자) 사용자 목록 페이지
 ```
+
+## 💾 DB 구성 (Database Schema)
+
+`migrations` 폴더의 마이그레이션 파일을 기반으로 생성된 데이터베이스 모델의 구조는 다음과 같습니다.
+
+#### `User`
+사용자 정보를 저장하는 모델입니다. Django의 기본 `auth.User` 모델 대신 커스텀 모델을 사용합니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | AutoField | 기본 키 (PK) |
+| `username` | CharField(50) | 사용자 이름 (고유) |
+| `join_date` | DateTimeField | 가입일 (자동 생성) |
+
+#### `Post`
+게시글 정보를 저장하는 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `user` | ForeignKey(User) | 작성자 (User 모델과 관계, 작성자 삭제 시 `NULL`로 설정) |
+| `title` | CharField(200) | 게시글 제목 |
+| `content` | TextField | 게시글 내용 |
+| `created_at` | DateTimeField | 작성일 (자동 생성) |
+| `attachment` | FileField | 첨부 파일 (선택 사항) |
+
+#### `Comment`
+게시글에 대한 댓글 정보를 저장하는 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `user` | ForeignKey(User) | 작성자 (User 모델과 관계, 작성자 삭제 시 댓글도 삭제) |
+| `post` | ForeignKey(Post) | 원본 게시글 (Post 모델과 관계, 게시글 삭제 시 댓글도 삭제) |
+| `content` | TextField | 댓글 내용 |
+| `created_at` | DateTimeField | 작성일 (자동 생성) |
+
+#### `PostLike`
+사용자가 '좋아요'를 누른 게시글 정보를 저장하는 중개 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `user` | ForeignKey(User) | 좋아요를 누른 사용자 |
+| `post` | ForeignKey(Post) | 좋아요를 받은 게시글 |
+| `created_at` | DateTimeField | 생성일 (자동 생성) |
+| `(user, post)` | UniqueConstraint | 사용자는 하나의 게시글에 한 번만 '좋아요'를 누를 수 있습니다. |
+
+#### `Bookmark`
+사용자가 북마크한 게시글 정보를 저장하는 중개 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `user` | ForeignKey(User) | 북마크한 사용자 |
+| `post` | ForeignKey(Post) | 북마크된 게시글 |
+| `created_at` | DateTimeField | 생성일 (자동 생성) |
+| `(user, post)` | UniqueConstraint | 사용자는 하나의 게시글을 한 번만 북마크할 수 있습니다. |
+
+#### `DailyVisitor`
+일일 방문자 수를 기록하는 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `date` | DateField | 날짜 (고유) |
+| `count` | PositiveIntegerField | 해당 날짜의 방문자 수 |
+
+#### `ActivityLog`
+사용자의 주요 활동(가입, 글 작성 등)을 기록하는 모델입니다.
+
+| 필드명 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | BigAutoField | 기본 키 (PK) |
+| `user` | ForeignKey(User) | 활동을 수행한 사용자 |
+| `activity_type` | CharField(10) | 활동 유형 (`signup`, `post`, `comment`, `like`) |
+| `message` | CharField(255) | 활동 내용 메시지 |
+| `created_at` | DateTimeField | 활동 시간 (자동 생성) |
 
 ## 실행 결과
 
