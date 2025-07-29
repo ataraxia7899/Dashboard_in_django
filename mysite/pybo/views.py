@@ -140,7 +140,7 @@ def post_detail(request, post_id):
 @login_required(login_url='pybo:login')
 def post_create(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             # Django의 로그인 유저(request.user)와 pybo의 User 모델을 연결합니다.
             pybo_user, created = User.objects.get_or_create(username=request.user.username)
@@ -162,7 +162,7 @@ def post_update(request, post_id):
         return redirect('pybo:post_detail', post_id=post.id)
 
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
             # 수정 후 목록 대신 상세 페이지로 이동하여 사용자 경험 개선

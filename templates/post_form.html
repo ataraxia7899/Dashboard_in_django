@@ -14,6 +14,13 @@
 			rel="stylesheet"
 		/>
 		<script src="{% static 'js/theme.js' %}" defer></script>
+		<style>
+			.current-file {
+				font-size: 0.9rem;
+				color: var(--text-color-secondary);
+				margin-top: 8px;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="dash-container">
@@ -38,7 +45,7 @@
 
 				<!-- Post Form -->
 				<div class="form-container" style="height: 55%;">
-					<form method="post">
+					<form method="post" enctype="multipart/form-data">
 						{% csrf_token %}
 						<!-- 오류 표시 -->
 						{% if form.errors %}
@@ -59,6 +66,14 @@
 						<div class="form-field">
 							<label for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
 							{{ form.content }}
+						</div>
+
+						<div class="form-field">
+							<label for="{{ form.attachment.id_for_label }}">{{ form.attachment.label }}</label>
+							{{ form.attachment }}
+							{% if post.attachment %}
+							<p class="current-file">현재 파일: <a href="{{ post.attachment.url }}" target="_blank">{{ post.attachment.name|cut:"attachments/" }}</a></p>
+							{% endif %}
 						</div>
 						<button type="submit" class="btn-submit">저장하기</button>
 					</form>

@@ -5,10 +5,11 @@ from .models import Post, Comment, Bookmark, PostLike
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'attachment']
         labels = {
             'title': '제목',
             'content': '내용',
+            'attachment': '첨부파일',
         }
 
 class SignUpForm(forms.ModelForm):

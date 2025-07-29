@@ -47,6 +47,16 @@
 				font-weight: 500;
 				border-color: var(--primary-color);
 			}
+			.post-attachment {
+				margin: 1.5rem 0;
+				padding: 1rem;
+				background-color: var(--background-color-offset);
+				border: 1px solid var(--border-color-light);
+				border-radius: 6px;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
 
 			/* Comment Section Styles */
 			.comment-section {
@@ -197,6 +207,15 @@
 							>
 						</div>
 					</div>
+
+					{% if post.attachment %}
+					<div class="post-attachment">
+						<span class="material-icons">attach_file</span>
+						<strong>첨부파일:</strong>
+						<a href="{{ post.attachment.url }}" download>{{ post.attachment.name|cut:"attachments/" }}</a>
+					</div>
+					{% endif %}
+
 					<div class="post-content">{{ post.content|linebreaksbr }}</div>
 
 					<!-- 좋아요 / 북마크 버튼 영역 -->
