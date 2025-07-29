@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from .models import Bookmark, Post, User, PostLike, Comment
+from .models import Bookmark, Post, User, PostLike, Comment, DailyVisitor
 from .forms import PostForm, SignUpForm, CommentForm
 from django.utils import timezone
 from datetime import timedelta
@@ -72,6 +72,11 @@ def index(request):
         # daily_active_users 딕셔너리에서 해당 날짜의 set을 가져오고, 그 길이를 구합니다.
         dau_values.append(len(daily_active_users.get(current_date, set())))
 
+    # 오늘의 방문자 수 (DailyVisitor 모델에서 가져오기)
+    today = timezone.now().date()
+    today_visitors_record = DailyVisitor.objects.filter(date=today).first()
+    today_visitors = today_visitors_record.count if today_visitors_record else 0
+
     # --- 3. List 데이터 준비 ---
     recent_users = User.objects.order_by('-join_date')[:5]
     # select_related('user')는 Post와 연결된 User 정보를 미리 가져와 DB 조회를 최적화합니다.
@@ -84,6 +89,7 @@ def index(request):
         'total_likes': total_likes,
         'total_comments': total_comments,
         'total_bookmarks': total_bookmarks,
+        'today_visitors': today_visitors,
         'pie_chart_data_json': json.dumps(pie_chart_data),
         'dau_labels_json': json.dumps(dau_labels),
         'dau_values_json': json.dumps(dau_values),

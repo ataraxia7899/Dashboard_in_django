@@ -12,15 +12,12 @@ class PostForm(forms.ModelForm):
         }
 
 class SignUpForm(forms.ModelForm):
-    password = forms.CharField(label='비밀번호', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    password2 = forms.CharField(label='비밀번호 확인', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    password = forms.CharField(label='비밀번호', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='비밀번호 확인', widget=forms.PasswordInput)
 
     class Meta:
         model = AuthUser # Django의 기본 User 모델 사용
         fields = ['username']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-input'}),
-        }
         labels = {
             'username': '사용자 ID',
         }

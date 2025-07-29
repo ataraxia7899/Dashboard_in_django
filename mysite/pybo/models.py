@@ -56,3 +56,11 @@ class PostLike(models.Model):
     class Meta:
         db_table = 'post_like'
         unique_together = ('user', 'post')
+
+
+class DailyVisitor(models.Model):
+    date = models.DateField(unique=True)
+    count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        db_table = 'daily_visitor'
