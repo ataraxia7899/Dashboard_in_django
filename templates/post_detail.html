@@ -46,7 +46,7 @@
 						</div>
 					</div>
 					<div class="post-content">{{ post.content|linebreaksbr }}</div>
-					{% if user.username == post.user.username %}
+					{% if user.is_superuser or user.username == post.user.username %}
 						<div class="post-actions">
 							<a href="{% url 'pybo:post_update' post.id %}" class="btn-update"
 								>수정</a

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>사용자 관리 - Bada 어드민</title>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'dashboard.css' %}" />
+		<link rel="stylesheet" href="{% static 'post_list.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<script src="{% static 'js/theme.js' %}" defer></script>
+	</head>
+	<body>
+		<div class="dash-container">
+			<main class="main-content">
+				<!-- Header -->
+				<div class="dash-header">
+					<div>
+						<div class="title">사용자 관리</div>
+						<div class="desc">전체 사용자를 확인하고 관리합니다.</div>
+					</div>
+					<div class="user-area">
+						<button class="theme-toggle" id="theme-toggle-btn">
+							<span class="material-icons">dark_mode</span>
+						</button>
+						<a href="{% url 'pybo:index' %}" class="btn-back">
+							<span class="material-icons">arrow_back</span> 대시보드
+						</a>
+					</div>
+				</div>
+
+				<!-- User List Table -->
+				<div class="post-list-container">
+					<table class="post-table">
+						<thead>
+							<tr>
+								<th class="col-id">ID</th>
+								<th>사용자명</th>
+								<th>가입일</th>
+								<th>마지막 로그인</th>
+								<th>권한</th>
+								<th class="col-manage">관리</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for u in users %}
+							<tr>
+								<td>{{ u.id }}</td>
+								<td><strong>{{ u.username }}</strong></td>
+								<td>{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+								<td>{{ u.last_login|date:"Y-m-d H:i"|default:"-" }}</td>
+								<td>
+									{% if u.is_superuser %}
+									<span class="material-icons" style="color: var(--primary-color); vertical-align: middle; font-size: 20px;">verified_user</span>
+									<span style="vertical-align: middle; color: var(--primary-color); font-weight: 500;">관리자</span>
+									{% else %}
+									<span class="material-icons" style="color: var(--text-color-secondary); vertical-align: middle; font-size: 20px;">person</span>
+									<span style="vertical-align: middle; color: var(--text-color-secondary);">일반</span>
+									{% endif %}
+								</td>
+								<td class="manage-buttons">
+									<!-- 향후 사용자 수정/삭제 버튼 추가 가능 -->
+								</td>
+							</tr>
+							{% empty %}
+							<tr>
+								<td colspan="6" style="text-align: center; padding: 20px">
+									등록된 사용자가 없습니다.
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

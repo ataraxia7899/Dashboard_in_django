@@ -6,7 +6,9 @@ from django.utils import timezone
 from datetime import timedelta
 import json, collections
 from django.db.models import Count
+from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth import views as auth_views, login as auth_login
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncDate
@@ -125,9 +127,10 @@ def post_create(request):
 @login_required(login_url='pybo:login')
 def post_update(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    # 작성자 본인인지 확인하는 로직 추가
-    if request.user.username != post.user.username:
-        return HttpResponseForbidden('이 게시글을 수정할 권한이 없습니다.')
+    # 작성자 본인 또는 관리자가 아니면 권한 없음 처리
+    if request.user.username != post.user.username and not request.user.is_superuser:
+        messages.error(request, '이 게시글을 수정할 권한이 없습니다.')
+        return redirect('pybo:post_detail', post_id=post.id)
 
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
@@ -143,12 +146,14 @@ def post_update(request, post_id):
 @login_required(login_url='pybo:login')
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    # 작성자 본인인지 확인하는 로직 추가
-    if request.user.username != post.user.username:
-        return HttpResponseForbidden('이 게시글을 삭제할 권한이 없습니다.')
+    # 작성자 본인 또는 관리자가 아니면 권한 없음 처리
+    if request.user.username != post.user.username and not request.user.is_superuser:
+        messages.error(request, '이 게시글을 삭제할 권한이 없습니다.')
+        return redirect('pybo:post_detail', post_id=post.id)
 
     if request.method == 'POST': # POST 요청일 때만 삭제
         post.delete()
+        messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
     return redirect('pybo:post_list')
 
 def signup(request):
@@ -170,6 +175,20 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+@login_required(login_url='pybo:login')
+def user_list(request):
+    """관리자만 접근 가능한 사용자 목록 페이지"""
+    if not request.user.is_superuser:
+        return HttpResponseForbidden('관리자만 접근할 수 있는 페이지입니다.')
+
+    # Django의 기본 User 모델을 사용하여 모든 사용자를 가져옵니다.
+    all_users = AuthUser.objects.all().order_by('-date_joined')
+
+    context = {
+        'users': all_users,
+    }
+    return render(request, 'user_list.html', context)
 
 class CustomLoginView(auth_views.LoginView):
     """로그인 성공 후 사용자의 is_superuser 값에 따라 리디렉션 경로를 다르게 처리합니다."""
