@@ -2,6 +2,7 @@
 from django.db import models
 
 class User(models.Model):
+    id = models.AutoField(primary_key=True)
     username = models.CharField(unique=True, max_length=50)
     join_date = models.DateTimeField(auto_now_add=True)
 
@@ -73,3 +74,21 @@ class DailyVisitor(models.Model):
 
     class Meta:
         db_table = 'daily_visitor'
+
+
+class ActivityLog(models.Model):
+    """사용자 활동 로그를 기록하는 모델"""
+    ACTIVITY_TYPES = [
+        ('signup', '가입'),
+        ('post', '게시글'),
+        ('comment', '댓글'),
+        ('like', '좋아요'),
+    ]
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='activities', null=True)
+    activity_type = models.CharField(max_length=10, choices=ACTIVITY_TYPES)
+    message = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'activity_log'
+        ordering = ['-created_at']

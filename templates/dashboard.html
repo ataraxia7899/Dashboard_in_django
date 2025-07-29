@@ -100,39 +100,26 @@
 				<div class="dash-grid">
 					<div class="mini-list-card">
 						<div class="mini-list-title">최근 활동 로그</div>
-						<!-- 이 부분은 아직 데이터베이스 테이블을 만들지 않아 더미 데이터로 표시됨 -->
 						<ul class="activity-list">
+							{% for activity in recent_activities %}
 							<li>
+								{% if activity.activity_type == 'signup' %}
 								<span class="material-icons">person_add</span>
-								<div>
-									<strong>Studio_bada</strong>님이 새로 가입했습니다.
-									<span class="user-meta">4시간 전</span>
-								</div>
-							</li>
-							<li>
+								{% elif activity.activity_type == 'post' %}
 								<span class="material-icons">post_add</span>
-								<div>
-									<strong>존서</strong>님이 새 게시글 'pitch cam'을
-									작성했습니다.
-									<span class="user-meta">12시간 전</span>
-								</div>
-							</li>
-							<li>
-								<span class="material-icons">favorite</span>
-								<div>
-									<strong>Zirla</strong>님이 <strong>존서</strong>님의 게시글을
-									좋아합니다.
-									<span class="user-meta">1일 전</span>
-								</div>
-							</li>
-							<li>
+								{% elif activity.activity_type == 'comment' %}
 								<span class="material-icons">comment</span>
+								{% elif activity.activity_type == 'like' %}
+								<span class="material-icons">favorite</span>
+								{% endif %}
 								<div>
-									<strong>moca</strong>님이 <strong>Zirla</strong>님의 게시글에
-									댓글을 남겼습니다.
-									<span class="user-meta">2일 전</span>
+									{{ activity.message|safe }}
+									<span class="user-meta">{{ activity.created_at|timesince }} 전</span>
 								</div>
 							</li>
+							{% empty %}
+							<li>최근 활동이 없습니다.</li>
+							{% endfor %}
 						</ul>
 					</div>
 					<a href="{% url 'pybo:user_list' %}" class="card-link">

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from .models import Bookmark, Post, User, PostLike, Comment, DailyVisitor
+from .models import Bookmark, Post, User, PostLike, Comment, DailyVisitor, ActivityLog
 from .forms import PostForm, SignUpForm, CommentForm
 from django.utils import timezone
 from datetime import timedelta
@@ -81,6 +81,7 @@ def index(request):
     recent_users = User.objects.order_by('-join_date')[:5]
     # select_related('user')는 Post와 연결된 User 정보를 미리 가져와 DB 조회를 최적화합니다.
     recent_posts = Post.objects.select_related('user').order_by('-created_at')[:5]
+    recent_activities = ActivityLog.objects.select_related('user').order_by('-created_at')[:5]
 
     context = {
         'total_users': total_users,
@@ -95,6 +96,7 @@ def index(request):
         'dau_values_json': json.dumps(dau_values),
         'recent_users': recent_users,
         'recent_posts': recent_posts,
+        'recent_activities': recent_activities,
     }
     return render(request, 'dashboard.html', context)
 
