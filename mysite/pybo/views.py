@@ -10,11 +10,12 @@ from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth import views as auth_views, login as auth_login
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.functions import TruncDate
 from django.core.paginator import Paginator
 
-# Create your views here.
+@login_required(login_url='pybo:login')
+@user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
 def index(request):
     # --- 1. Status Card 데이터 계산 ---
     total_users = User.objects.count()
@@ -177,6 +178,7 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 @login_required(login_url='pybo:login')
+@user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
 def user_list(request):
     """관리자만 접근 가능한 사용자 목록 페이지"""
     if not request.user.is_superuser:
