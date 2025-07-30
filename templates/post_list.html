@@ -97,6 +97,9 @@
 								<td>{{ post.id }}</td>
 								<td class="post-title">
 									<a href="{% url 'pybo:post_detail' post.id %}">{{ post.title|truncatechars:50 }}</a>
+									{% if post.attachment %}
+									<span class="material-icons" style="font-size: 1.1em; vertical-align: -3px; color: #888; margin-left: 4px;" title="첨부파일 있음">attach_file</span>
+									{% endif %}
 									{% if post.comment_count > 0 %}
 									<span style="color: #888; font-size: 0.9em; margin-left: 5px;">[{{ post.comment_count }}]</span>
 									{% endif %}
