@@ -36,21 +36,37 @@
 		<div class="dash-container">
 			<!-- Main -->
 			<main class="main-content">
-				<!-- Header -->
+							<!-- Header -->
+			<main class="main-content">
 				<div class="dash-header">
 					<div>
-						<div class="title">게시글 목록</div>
-						<div class="desc">전체 게시글을 확인하고 관리합니다.</div>
+						<div class="title">{{ page_title|default:"게시글 목록" }}</div>
+						<div class="desc">{{ page_desc|default:"전체 게시글을 확인하고 관리합니다." }}</div>
 					</div>
 					<div class="user-area">
-						<a href="{% url 'pybo:post_create' %}" class="btn-create">
-							<span class="material-icons">add</span>
-							글쓰기
-						</a>
-						<a href="{% url 'pybo:login' %}" class="btn-logout">
-							<span class="material-icons">logout</span>
-							로그아웃
-						</a>
+						{% if user.is_authenticated %}
+							<a href="{% url 'pybo:post_create' %}" class="btn-create">
+								<span class="material-icons">add</span>
+								글쓰기
+							</a>
+							<a href="{% url 'pybo:my_bookmarks' %}" class="btn-create" style="background-color: #3182ce;">
+								<span class="material-icons">bookmark</span>
+								북마크
+							</a>
+							<a href="{% url 'pybo:my_likes' %}" class="btn-create" style="background-color: #dd6b20;">
+								<span class="material-icons">favorite</span>
+								좋아요
+							</a>
+							<a href="{% url 'pybo:logout' %}" class="btn-logout">
+								<span class="material-icons">logout</span>
+								로그아웃
+							</a>
+						{% else %}
+							<a href="{% url 'pybo:login' %}" class="btn-create">
+								<span class="material-icons">login</span>
+								로그인
+							</a>
+						{% endif %}
 						<button class="theme-toggle" id="theme-toggle-btn">
 							<span class="material-icons">dark_mode</span>
 						</button>

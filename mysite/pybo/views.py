@@ -32,7 +32,8 @@ def get_pybo_user(view_func):
 @user_passes_test(lambda u: u.is_superuser, login_url='pybo:post_list')
 def index(request):
     # --- 1. Status Card 데이터 계산 ---
-    total_users = User.objects.count()
+    # Django의 인증 시스템(auth_user 테이블)에 등록된 총 사용자 수를 계산합니다.
+    total_users = AuthUser.objects.count()
     total_posts = Post.objects.count()
     total_likes = PostLike.objects.count()
     total_comments = Comment.objects.count()
@@ -401,3 +402,60 @@ def delete_comment(request, comment_id):
     
     # POST 요청이 아니면 해당 댓글이 있는 상세 페이지로 리디렉션합니다.
     return redirect('pybo:post_detail', post_id=comment.post.id)
+
+@login_required(login_url='pybo:login')
+def my_likes(request):
+    """
+    현재 로그인한 사용자가 좋아요를 누른 게시글 목록을 보여줍니다.
+    """
+    # request.user (AuthUser)를 사용하여 pybo.User 객체를 가져옵니다.
+    pybo_user = User.objects.filter(username=request.user.username).first()
+    
+    if pybo_user:
+        # 'likes'는 Post 모델에서 PostLike 모델로의 역참조(related_name)입니다.
+        # Post -> PostLike -> User 순으로 필터링합니다.
+        post_list = Post.objects.filter(likes__user=pybo_user).select_related('user').order_by('-created_at')
+    else:
+        # 해당 pybo_user가 없는 예외적인 경우, 빈 목록을 반환합니다.
+        post_list = Post.objects.none()
+
+    # 페이지네이션
+    page = request.GET.get('page', '1')
+    paginator = Paginator(post_list, 10) # 페이지 당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context = {
+        'posts': page_obj,
+        'page_title': '내가 좋아요 한 글',
+        'page_desc': '회원님께서 좋아요를 누른 게시글 목록입니다.'
+    }
+    # post_list.html 템플릿을 재사용하여 렌더링합니다.
+    return render(request, 'post_list.html', context)
+
+@login_required(login_url='pybo:login')
+def my_bookmarks(request):
+    """
+    현재 로그인한 사용자가 북마크한 게시글 목록을 보여줍니다.
+    """
+    # request.user (AuthUser)를 사용하여 pybo.User 객체를 가져옵니다.
+    pybo_user = User.objects.filter(username=request.user.username).first()
+
+    if pybo_user:
+        # 'bookmarks'는 Post 모델에서 Bookmark 모델로의 역참조(related_name)입니다.
+        # Post -> Bookmark -> User 순으로 필터링합니다.
+        post_list = Post.objects.filter(bookmarks__user=pybo_user).select_related('user').order_by('-created_at')
+    else:
+        post_list = Post.objects.none()
+
+    # 페이지네이션
+    page = request.GET.get('page', '1')
+    paginator = Paginator(post_list, 10) # 페이지 당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context = {
+        'posts': page_obj,
+        'page_title': '내 북마크',
+        'page_desc': '회원님께서 북마크한 게시글 목록입니다.'
+    }
+    # post_list.html 템플릿을 재사용하여 렌더링합니다.
+    return render(request, 'post_list.html', context)

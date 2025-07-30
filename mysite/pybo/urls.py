@@ -27,6 +27,9 @@ urlpatterns = [
 	# 좋아요, 북마크 기능 URL
 	path('post/<int:post_id>/like/', views.toggle_like, name='toggle_like'),
 	path('post/<int:post_id>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
+    # 내가 좋아요/북마크한 글 목록 URL
+    path('my-likes/', views.my_likes, name='my_likes'),
+    path('my-bookmarks/', views.my_bookmarks, name='my_bookmarks'),
     # 댓글 기능 URL
     path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
     path('comment/<int:comment_id>/update/', views.comment_update, name='comment_update'),
