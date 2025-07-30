@@ -118,7 +118,7 @@ def post_list(request):
   # post_list 뷰도 실제 데이터를 조회하도록 개선합니다.
   # 페이지네이션 추가
   page = request.GET.get('page', '1') # 페이지
-  post_list = Post.objects.select_related('user').order_by('-created_at')
+  post_list = Post.objects.select_related('user').annotate(comment_count=Count('comments')).order_by('-created_at')
   paginator = Paginator(post_list, 10) # 페이지당 10개씩 보여주기
   page_obj = paginator.get_page(page)
   return render(request, 'post_list.html', {'posts': page_obj})
@@ -414,7 +414,7 @@ def my_likes(request):
     if pybo_user:
         # 'likes'는 Post 모델에서 PostLike 모델로의 역참조(related_name)입니다.
         # Post -> PostLike -> User 순으로 필터링합니다.
-        post_list = Post.objects.filter(likes__user=pybo_user).select_related('user').order_by('-created_at')
+        post_list = Post.objects.filter(likes__user=pybo_user).select_related('user').annotate(comment_count=Count('comments')).order_by('-created_at')
     else:
         # 해당 pybo_user가 없는 예외적인 경우, 빈 목록을 반환합니다.
         post_list = Post.objects.none()
@@ -443,7 +443,7 @@ def my_bookmarks(request):
     if pybo_user:
         # 'bookmarks'는 Post 모델에서 Bookmark 모델로의 역참조(related_name)입니다.
         # Post -> Bookmark -> User 순으로 필터링합니다.
-        post_list = Post.objects.filter(bookmarks__user=pybo_user).select_related('user').order_by('-created_at')
+        post_list = Post.objects.filter(bookmarks__user=pybo_user).select_related('user').annotate(comment_count=Count('comments')).order_by('-created_at')
     else:
         post_list = Post.objects.none()
 

@@ -97,6 +97,9 @@
 								<td>{{ post.id }}</td>
 								<td class="post-title">
 									<a href="{% url 'pybo:post_detail' post.id %}">{{ post.title|truncatechars:50 }}</a>
+									{% if post.comment_count > 0 %}
+									<span style="color: #888; font-size: 0.9em; margin-left: 5px;">[{{ post.comment_count }}]</span>
+									{% endif %}
 								</td>
 								<td class="post-content-preview">
 									{{ post.content|truncatechars:10 }}
