@@ -54,7 +54,7 @@ pip install -r requirements.txt
 # 1. 데이터베이스 스키마를 생성(migrate)합니다.
 python manage.py migrate
 
-# 2. 관리자(superuser) 계정을 생성합니다.
+# 2. 관리자(superuser) 계정을 생성합니다. (선택사항)
 python manage.py createsuperuser
 ```
 
