@@ -1,4 +1,4 @@
-<img width="42" height="35" alt="image" src="https://github.com/user-attachments/assets/02b61377-cd21-44f6-a520-325f9e9a0931" /># 📄 Django 대시보드 웹사이트 프로젝트 (Pybo)
+# 📄 Django 대시보드 웹사이트 프로젝트 (Pybo)
 
 ## 🖥️ 프로젝트 소개
 
