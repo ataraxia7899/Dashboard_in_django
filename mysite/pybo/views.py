@@ -193,12 +193,16 @@ def post_update(request, post_id):
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     # 작성자 본인 또는 관리자가 아니면 권한 없음 처리
-    # 작성자 본인 또는 관리자가 아니면 권한 없음 처리
     if request.user.username != post.user.username and not request.user.is_superuser:
         messages.error(request, '이 게시글을 삭제할 권한이 없습니다.')
         return redirect('pybo:post_detail', post_id=post.id)
+
+    if request.method == 'POST':
         post.delete()
         messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+        return redirect('pybo:post_list')
+    
+    # POST 요청이 아닌 경우 (예: GET으로 직접 접근)
     return redirect('pybo:post_list')
 
 def signup(request):
