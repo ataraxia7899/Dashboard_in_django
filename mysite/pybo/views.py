@@ -92,7 +92,7 @@ def index(request):
     today_visitors = today_visitors_record.count if today_visitors_record else 0
 
     # --- 3. List 데이터 준비 ---
-    recent_users = User.objects.order_by('-join_date')[:5]
+    recent_users = AuthUser.objects.order_by('-date_joined')[:5]
     # select_related('user')는 Post와 연결된 User 정보를 미리 가져와 DB 조회를 최적화합니다.
     recent_posts = Post.objects.select_related('user').order_by('-created_at')[:5]
     recent_activities = ActivityLog.objects.select_related('user').order_by('-created_at')[:5]
