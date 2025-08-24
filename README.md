@@ -204,6 +204,8 @@ python manage.py runserver
 ### 최근 게시글 페이지 (다크모드)
 <img width="503" height="1113" alt="Image" src="https://github.com/user-attachments/assets/c7859727-e0b1-44f8-ae3c-bc6542b796b3" />
 
+### 시연영상 : <a href="https://youtu.be/QI05J3-H4-w" target="_blank">프로젝트 시연영상</a>
+
 ## 📜 라이선스 및 연락처
 
 - 본 프로젝트는 학습 및 포트폴리오 용도로 작성되었습니다.
